@@ -27,3 +27,16 @@ Vite 内置的 HMR 和增量构建可以减少构建时间。
 将一些稳定的外部依赖通过 CDN 加载，而不是打包进项目中。
 - 分析工具
 使用 @rollup/plugin-analyzer 或类似插件来分析打包后的文件大小分布，帮助识别优化点。
+
+## vite 依赖预构建
+
+## 指定vite 插件构建顺序
+
+enforce:"pre" | "post" | undefined;
+
+## vite插件常用hook
+
+transformIndexHtml
+
+## 为什么说vite比webpack快
+

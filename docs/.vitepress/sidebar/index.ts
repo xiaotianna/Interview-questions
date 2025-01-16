@@ -5,28 +5,36 @@ export const sidebar = {
       items: [
         { text: '目录', link: '/html/' },
         { text: '目录1', link: '/html/index2' }
-        // ...
       ]
     },
-    // {
-    //   text: 'html1',
-    //   items: [
-    //     { text: '目录', link: '/html/index2' }
-    //     // ...
-    //   ]
-    // }
+  ],
+  '/js/': [
+    { text: '同一个页面三个组件请求同一个API', link: '/js/同一个页面三个组件请求同一个API' },
   ],
   '/前端工程化/': [
     {
-      text: '前端工程化',
       items: [
-        { text: '目录', link: '/前端工程化/' }
+        { text: '模块化规范', link: '/前端工程化/模块化规范' },
+        { text: 'peerDependencies', link: '/前端工程化/peerDependencies' },
+        { text: 'pnpm优势', link: '/前端工程化/pnpm优势' },
+        { text: 'minify代码压缩', link: '/前端工程化/minify代码压缩' },
       ]
     },
     {
-      text: 'babel',
-      link: '/前端工程化/babel'
+      items: [
+        { text: 'babel', link: '/前端工程化/babel' },
+      ]
     },
+    {
+      items: [
+        { text: 'webpack', link: '/前端工程化/webpack' },
+      ]
+    },
+    {
+      items: [
+        { text: 'vite', link: '/前端工程化/vite' },
+      ]
+    }
   ],
   '/性能优化/': [
     {
@@ -107,6 +115,7 @@ export const sidebar = {
     {
       items: [
         { text: '设计模式', link: '/其他/设计模式' },
+        { text: '插件化', link: '/其他/设计模式/插件化' },
       ]
     },
   ],
