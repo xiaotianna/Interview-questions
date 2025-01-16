@@ -6,11 +6,17 @@ hero:
     
 features:
     - title: HTML
-      link: /html/
+      link: /前端基础/html/
     - title: CSS
-      link: /css/
+      link: /前端基础/css/
     - title: JS
-      link: /js/
+      link: /前端基础/js/
+    - title: 浏览器相关
+      link: /前端基础/浏览器相关/进程和线程
+    - title: 计算机网络
+      link: /前端基础/计算机网络/
+    - title: 设计模式
+      link: /前端基础/设计模式/
     - title: Vue
       link: /vue/
     - title: React
@@ -23,12 +29,6 @@ features:
       link: /项目/
     - title: 算法
       link: /算法/
-    - title: 浏览器相关
-      link: /浏览器相关/
     - title: Git
       link: /git/
-    - title: 设计模式
-      link: /其他/设计模式/
-    - title: 计算机网络
-      link: /其他/计算机网络/
 ---

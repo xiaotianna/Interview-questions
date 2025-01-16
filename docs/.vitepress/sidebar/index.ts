@@ -1,15 +1,41 @@
 export const sidebar = {
-  '/html/': [
+  '/前端基础/': [
     {
       text: 'HTML',
       items: [
-        { text: '目录', link: '/html/' },
-        { text: '目录1', link: '/html/index2' }
+        { text: '目录', link: '/前端基础/html/' },
+        { text: '目录1', link: '/前端基础/html/index2' }
       ]
     },
-  ],
-  '/js/': [
-    { text: '同一个页面三个组件请求同一个API', link: '/js/同一个页面三个组件请求同一个API' },
+    {
+      text: 'CSS',
+      items: []
+    },
+    {
+      text: 'JS',
+      items: [
+        { text: '同一个页面三个组件请求同一个API', link: '/前端基础/js/同一个页面三个组件请求同一个API' },
+      ]
+    },
+    {
+      text: '浏览器相关',
+      items: [
+        { text: '进程和线程', link: '/前端基础/浏览器相关/进程和线程' },
+        { text: '事件循环', link: '/前端基础/浏览器相关/事件循环' },
+        { text: '浏览器渲染原理', link: '/前端基础/浏览器相关/浏览器渲染原理' },
+      ]
+    },
+    {
+      items: [
+        { text: '计算机网络', link: '/前端基础/计算机网络/' },
+      ]
+    },
+    {
+      items: [
+        { text: '设计模式', link: '/前端基础/设计模式/' },
+        { text: '插件化', link: '/前端基础/设计模式/插件化' }
+      ]
+    }
   ],
   '/前端工程化/': [
     {
@@ -90,12 +116,6 @@ export const sidebar = {
       ]
     }
   ],
-  '/浏览器相关/': [
-    { text: '目录', link: '/浏览器相关/' },
-    { text: '进程和线程', link: '/浏览器相关/进程和线程' },
-    { text: '事件循环', link: '/浏览器相关/事件循环' },
-    { text: '浏览器渲染原理', link: '/浏览器相关/浏览器渲染原理' },
-  ],
   '/git/': [
     {
       items: [
@@ -110,20 +130,5 @@ export const sidebar = {
         { text: 'git提交后 commitlint', link: '/git/git提交后' },
       ]
     }
-  ],
-  '/其他/设计模式': [
-    {
-      items: [
-        { text: '设计模式', link: '/其他/设计模式' },
-        { text: '插件化', link: '/其他/设计模式/插件化' },
-      ]
-    },
-  ],
-  '/其他/计算机网络': [
-    {
-      items: [
-        { text: '计算机网络', link: '/其他/计算机网络' },
-      ]
-    },
   ]
 }
