@@ -1,5 +1,5 @@
 export const nav = [
-  { text: '前端基础', link: '/前端基础/html/', activeMatch: '/前端基础/' },
+  { text: '前端基础', link: '/前端基础/html+css/', activeMatch: '/前端基础/' },
   { text: 'Vue', link: '/vue/', activeMatch: '/vue/' },
   { text: 'React', link: '/react/', activeMatch: '/react/' },
   { text: '前端工程化', link: '/前端工程化/模块化规范', activeMatch: '/前端工程化/' },

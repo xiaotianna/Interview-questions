@@ -6,7 +6,7 @@ hero:
     
 features:
     - title: HTML
-      link: /前端基础/html/
+      link: /前端基础/html+css/
     - title: CSS
       link: /前端基础/css/
     - title: JS
