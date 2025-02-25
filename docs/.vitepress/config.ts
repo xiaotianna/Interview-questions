@@ -7,6 +7,7 @@ export default defineConfig({
   markdown: {
     lineNumbers: true
   },
+  base: '/interview-question/',
   themeConfig: {
     search: {
       provider: 'local',
