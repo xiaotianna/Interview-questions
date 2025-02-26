@@ -73,13 +73,13 @@
 
 ## 问题 4：overflow 不同值的区别
 
-| 属性值       | 效果                                                                 |
-|--------------|----------------------------------------------------------------------|
-| `visible`    | 内容溢出容器时，会呈现在容器之外，不会被隐藏或截断。这意味着溢出的内容会覆盖其他元素。 |
-| `hidden`     | 内容溢出容器时，会被隐藏，不可见。这意味着超出容器的部分将被截断并隐藏。               |
-| `scroll`     | 如果内容溢出容器，将会显示滚动条以便查看溢出内容。用户可以滚动内容以查看被隐藏的部分。即使内容没有溢出，也会显示滚动条，但它们会被禁用。 |
-| `auto`       | 与 `scroll` 类似，如果内容溢出容器，会显示滚动条。但与 `scroll` 不同的是，滚动条仅在内容溢出时才会出现，否则会被禁用。 |
-| `inherit`    | 继承父元素的 `overflow` 值。                                           |
+| 属性值    | 效果                                                                                                                                     |
+| --------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| `visible` | 内容溢出容器时，会呈现在容器之外，不会被隐藏或截断。这意味着溢出的内容会覆盖其他元素。                                                   |
+| `hidden`  | 内容溢出容器时，会被隐藏，不可见。这意味着超出容器的部分将被截断并隐藏。                                                                 |
+| `scroll`  | 如果内容溢出容器，将会显示滚动条以便查看溢出内容。用户可以滚动内容以查看被隐藏的部分。即使内容没有溢出，也会显示滚动条，但它们会被禁用。 |
+| `auto`    | 与 `scroll` 类似，如果内容溢出容器，会显示滚动条。但与 `scroll` 不同的是，滚动条仅在内容溢出时才会出现，否则会被禁用。                   |
+| `inherit` | 继承父元素的 `overflow` 值。                                                                                                             |
 
 ## 问题 5：iframe 有哪些优缺点及使用场景
 
@@ -113,21 +113,21 @@
 2. **特定性**：特定性值的大小来排序，特定性值较大的规则具有更高的优先级，权重计算方式如下：
 
 - **内联样式**：每个内联样式规则的特定性为 `1000`。
-- **ID选择器**：每个ID选择器的特定性为 `100`。
+- **ID 选择器**：每个 ID 选择器的特定性为 `100`。
 - **类选择器、属性选择器和伪类选择器**：每个类选择器、属性选择器和伪类选择器的特定性为 `10`。
 - **元素选择器和伪元素选择器**：每个元素选择器和伪元素选择器的特定性为 `1`。
 
 案例：
 
-- `#header`：特定性值为 100（1个ID选择器）。
-- `.menu-item`：特定性值为 10（1个类选择器）。
-- `ul li`：特定性值为 2（2个元素选择器）。
+- `#header`：特定性值为 100（1 个 ID 选择器）。
+- `.menu-item`：特定性值为 10（1 个类选择器）。
+- `ul li`：特定性值为 2（2 个元素选择器）。
 
 3. **覆盖规则**：如果两个规则具有相同的特定性，后面定义的规则将覆盖先前定义的规则，因此后定义的规则具有更高的优先级。
 
-## 问题7：什么是浮动，浮动会引起什么问题，有何解决方案？
+## 问题 7：什么是浮动，浮动会引起什么问题，有何解决方案？
 
-浮动（float）是CSS中的一种布局属性，用于控制元素在其父元素中的位置，使元素可以浮动到其父元素的左侧或右侧。浮动通常用于实现文本环绕图片、创建多列布局等效果。
+浮动（float）是 CSS 中的一种布局属性，用于控制元素在其父元素中的位置，使元素可以浮动到其父元素的左侧或右侧。浮动通常用于实现文本环绕图片、创建多列布局等效果。
 
 **导致问题：**
 
@@ -140,7 +140,7 @@
 
 ```css
 .clearfix::after {
-  content: "";
+  content: '';
   display: table;
   clear: both;
 }
@@ -152,10 +152,315 @@
 
 - 使用 `overflow: hidden`：在包含浮动元素的父元素上添加 `overflow: hidden` 可以清除浮动，但可能会剪切内容，因此需谨慎使用。
 
-### 问题8：设置一个元素的背景颜色会填充的区域
+## 问题 8：设置一个元素的背景颜色会填充的区域
 
 - **内容区域**：背景颜色会填充元素的内容区域，即文本和内联元素所在的区域。
 - **内边距区域**：如果元素具有内边距（通过 `padding` 属性设置），背景颜色也会填充内边距区域。
 - **边框区域**：如果元素具有边框（通过 `border` 属性设置），且背景颜色为 `transparent`，也会填充边框区域。
 
-背景颜色不会填充元素的外边距区域。外边距是元素与其他元素之间的间距，背景颜色通常不会扩展到外边距。这意味着背景颜色将覆盖元素的内容、内边距和边框，但不会覆盖外边距。这是CSS中背景颜色的标准行为。
+背景颜色不会填充元素的外边距区域。外边距是元素与其他元素之间的间距，背景颜色通常不会扩展到外边距。这意味着背景颜色将覆盖元素的内容、内边距和边框，但不会覆盖外边距。这是 CSS 中背景颜色的标准行为。
+
+> 也就是只有 `margin` 不会被填充，其余都会被填充背景色。
+
+## 问题 9：Less 和 Sass 的区别
+
+1. 编译
+
+- Less：可通过 JavaScript 在客户端或 Node.js 在服务器端编译。
+- Sass：通常通过 Ruby 或 LibSass（C/C++ 实现）编译，速度较快。
+
+2. 功能
+
+- Sass 比 Less 更强大，它支持嵌套、变量、混合（mixins）、导入（imports）、函数等。
+
+3. 总结
+
+- Less：适合初学者或小型项目。
+- Sass：功能更强大，适合复杂项目。
+
+## 问题 10：link 标签和 import 标签的区别？
+
+`<link>` 标签和 `@import` 规则都用于引入外部 CSS 文件，区别如下：
+
+- **语法和用法**：
+
+  - `<link>` 标签是 HTML 标记，用于在 HTML 文档的`<head>`部分中引入外部 CSS 文件。它具有自己的属性，例如 `rel`（关系）、`href`（资源链接）、`type`（MIME 类型）等。
+
+  ```html
+  <link
+    rel="stylesheet"
+    type="text/css"
+    href="styles.css"
+  />
+  ```
+
+  - `@import` 是 CSS 规则，用于在 CSS 样式表中引入外部 CSS 文件。它必须位于 CSS 样式表中，通常放在样式表的顶部，可以用于导入其他 CSS 文件。
+
+  ```css
+  @import url('styles.css');
+  ```
+
+- **加载方式**：
+
+  - `<link>` 标签会在页面加载过程中同时加载 CSS 文件，这可以并行进行，不会阻止页面的渲染。
+  - `@import` 规则只能在当前 CSS 文件加载完成后才会加载引入的外部 CSS 文件，这会导致页面渲染的延迟，因为它会阻止页面的渲染。
+
+- **兼容性**：
+
+  - `<link>` 标签的支持广泛，可以用于所有 HTML 版本。
+  - `@import` 规则是 CSS2 引入的特性，较旧的浏览器可能不支持，尤其是在 CSS1 规范中并没有这个特性。但在现代浏览器中，它通常能够正常工作。
+
+- **维护和管理**：
+
+  - 使用 `<link>` 标签更容易维护和管理，因为它与 HTML 文档分开，并且可以在文档的 `<head>` 部分中轻松找到。
+  - 使用 `@import` 规则时，CSS 代码和引入的 CSS 文件混在一起，可能会导致维护复杂度增加，特别是在大型项目中。
+
+## 问题 11：块元素、行元素、置换元素的区别
+
+在 HTML 和 CSS 中，元素可以根据它们的行为和显示方式分为：
+
+1. 块级元素（Block-level Elements）
+2. 内联元素（Inline Elements）
+3. 置换元素（Replaced Elements）
+
+**块级元素（Block-level Elements）：**
+
+- 块级元素通常以新行开始，占据父元素可用宽度的整个宽度。
+- 块级元素可以包含其他块级元素和内联元素。
+- 常见的块级元素包括 `<div>`、`<p>`、`<h1>` - `<h6>`、`<ul>`、`<ol>`、`<li>` 等。
+
+**内联元素（Inline Elements）：**
+
+- 内联元素通常不会导致新行的开始，它们只占据它们的内容宽度。
+- 内联元素通常包含在块级元素内部，可以与其他内联元素在同一行上。
+- 常见的内联元素包括 `<span>`、`<a>`、`<strong>`、`<em>`、`<img>`、`<br>` 等。
+
+**置换元素（Replaced Elements）：**
+
+- 置换元素是一种特殊类型的元素，其内容通常由外部资源（如图像、视频或浏览器默认样式）来替代。
+- 置换元素的尺寸和外观通常由外部资源定义，而不是 CSS 样式。
+- 常见的置换元素包括 `<img>`、`<video>`、`<iframe>` 等。
+
+**注意**：这些术语描述了元素的默认行为，但 CSS 可以用于修改元素的显示方式。例如，可以使用 CSS 将内联元素转换为块级元素，或者使用 `display` 属性将块级元素转换为内联元素。置换元素的行为通常是固定的，但也可以通过 CSS 进行一些控制。这些概念对于理解和掌握 HTML 和 CSS 的布局和显示方式非常重要，因为它们影响到页面结构和样式的创建和控制。
+
+## 问题 12：响应式和自适应
+
+- **响应式设计：**
+  - 使用 CSS 媒体查询（Media Queries）和流式布局（Fluid Grids）来<u>根据屏幕尺寸动态调整页面布局</u>。
+  - 页面元素的大小和位置会随着浏览器窗口的变化而自动调整。
+  - 通常使用`百分比`、`em`、`rem`等相对单位来定义尺寸。
+- **自适应设计：**
+  - 为不同的设备或屏幕尺寸设计多个固定的布局版本。
+  - 使用服务器端或客户端检测设备类型，然后加载相应的布局。
+  - 页面布局在特定设备上是固定的，不会随窗口大小变化而动态调整。
+
+## 问题 13：BFC
+
+### 1. 定义
+
+BFC：块级格式化上下文，就是一个独立的布局环境，BFC 里面的元素跟外面互不影响
+
+### 2. BFC 的布局规则（特性）
+
+1. 垂直方向上的距离由 `margin` 决定，在同一个 BFC 里的相邻的两个块的 `margin` 会重叠
+
+2. 开启了 `BFC` 的块和浮动元素不会重叠，会挨着浮动元素显示。
+
+> 一般情况下，两个元素，一个开启了浮动的元素，会盖住另一个未浮动的元素。
+
+3. 计算 `BFC` 高度的时候，浮动的子元素也参与计算。
+
+> 这就是 `overflow: hidden;` 可以解决浮动后，父容器高度为 0 的问题。
+
+### 3. 如何开启 BFC
+
+有两种情况：
+
+1. 手动开启，如：
+   - 浮动的元素（给元素添加浮动）
+   - 定位的元素（position 值为 `absolute` 或 `fixed`）
+   - display 为 `inline-block`、`flex`、`inline-flex`、`grid` 或 `inline-grid`
+   - overflow 除 `visible` 外的值
+2. 默认开启，如：`html根元素`
+
+### 4. 解决的问题
+
+1. margin 重叠问题：
+
+例如：如下两个盒子的 `margin` 为 `200px`（因为 `html根元素` 天生就是一个 BFC）
+
+> 会取值较大值
+
+```html {15,21,26,27}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0"
+    />
+    <title>Document</title>
+    <style>
+      .box1 {
+        width: 200px;
+        height: 200px;
+        background-color: red;
+        margin-bottom: 50px;
+      }
+      .box2 {
+        width: 200px;
+        height: 200px;
+        background-color: blue;
+        margin-top: 200px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="box1"></div>
+    <div class="box2"></div>
+  </body>
+</html>
+```
+
+解决方法：用 `BFC` 元素包裹住其中一个
+
+```html {25}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        .box1{
+            width: 200px;
+            height: 200px;
+            background-color: red;
+            margin-bottom: 50px;
+        }
+        .box2{
+            width: 200px;
+            height: 200px;
+            background-color: blue;
+            margin-top: 200px;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="box1"></div>
+    <div style="overflow: hidden;">
+        <div class="box2"></div>
+    </div>
+</body>
+</html>
+```
+
+3. 浮动元素，父元素高度坍塌问题：
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0"
+    />
+    <title>Document</title>
+    <style>
+      .box1 {
+        width: 100px;
+        height: 100px;
+        background-color: red;
+        float: left;
+      }
+    </style>
+  </head>
+  <body>
+    <div style="background-color: blue;">
+      <div class="box1"></div>
+    </div>
+  </body>
+</html>
+```
+
+解决办法：
+
+给父元素设置 `overflow: hidden;`
+
+```html {1}
+<div style="overflow: hidden; background-color: blue;">
+```
+
+2. 浮动元素和普通元素重叠问题：
+
+> 给 box1 设置浮动，会盖住下面的 box2
+
+```html {15}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0"
+    />
+    <title>Document</title>
+    <style>
+      .box1 {
+        width: 300px;
+        height: 300px;
+        background-color: red;
+        float: left;
+      }
+      .box2 {
+        width: 400px;
+        height: 400px;
+        background-color: blue;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="box1"></div>
+    <div class="box2"></div>
+  </body>
+</html>
+```
+
+解决方法：
+
+将 box2 也设置为 bfc
+
+```html {15,21}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0"
+    />
+    <title>Document</title>
+    <style>
+      .box1 {
+        width: 300px;
+        height: 300px;
+        background-color: red;
+        float: left;
+      }
+      .box2 {
+        width: 400px;
+        height: 400px;
+        background-color: blue;
+        overflow: hidden;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="box1"></div>
+    <div class="box2"></div>
+  </body>
+</html>
+```

@@ -8,15 +8,6 @@ export const sidebar = {
       ]
     },
     {
-      text: 'JS',
-      items: [
-        {
-          text: '同一个页面三个组件请求同一个API',
-          link: '/前端基础/js/同一个页面三个组件请求同一个API'
-        }
-      ]
-    },
-    {
       text: '浏览器相关',
       items: [
         { text: '进程和线程', link: '/前端基础/浏览器相关/进程和线程' },
@@ -128,7 +119,7 @@ export const sidebar = {
   '/算法/': [
     {
       text: '算法',
-      items: [{ text: '目录', link: '/算法/' }]
+      items: [{ text: '数据结构', link: '/算法/数据结构/' }]
     }
   ],
   '/git/': [

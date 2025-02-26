@@ -5,12 +5,8 @@ hero:
     tagline: 前端面试题📖
     
 features:
-    - title: HTML
+    - title: 前端基础
       link: /前端基础/html+css/
-    - title: CSS
-      link: /前端基础/css/
-    - title: JS
-      link: /前端基础/js/
     - title: 浏览器相关
       link: /前端基础/浏览器相关/进程和线程
     - title: 计算机网络
@@ -28,7 +24,7 @@ features:
     - title: 项目
       link: /项目/
     - title: 算法
-      link: /算法/
+      link: /算法/数据结构/
     - title: Git
       link: /git/
 ---
