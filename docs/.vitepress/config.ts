@@ -8,6 +8,7 @@ export default defineConfig({
     lineNumbers: true
   },
   base: '/Interview-questions/',
+  ignoreDeadLinks: true,
   themeConfig: {
     search: {
       provider: 'local',
