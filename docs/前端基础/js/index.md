@@ -486,5 +486,343 @@ console.log(add(2)) // NaN
 
 ## 问题 18：什么是内存泄漏
 
+内存泄漏是指应用程序中的内存不再被使用但仍然被占用，导致内存消耗逐渐增加，最终可能导致应用程序性能下降或崩溃。内存泄漏通常是由于开发者编写的代码未正确释放不再需要的对象或数据而导致的。
 
+**特征**：程序对内存失去控制
 
+**内存泄漏案例**：
+
+- 意外的全局变量
+
+```js
+function someFunction() {
+  // 这个变量会变成全局变量，并可能导致内存泄漏
+  myObject = {
+    /* ... */
+  }
+}
+```
+
+- 闭包：闭包可能会无意中持有对不再需要的变量或对象的引用，从而阻止它们被垃圾回收。
+
+```js
+function createClosure() {
+  const data = [
+    /* 大量数据 */
+  ]
+  return function () {
+    // 闭包仍然持有对 'data' 的引用，即使它不再需要
+    console.log(data)
+  }
+}
+
+const closureFunction = createClosure()
+// 当 'closureFunction' 不再需要时，它仍然保留着 'data' 的引用，导致内存泄漏。
+```
+
+- 事件监听器: 忘记移除事件监听器可能会导致内存泄漏，因为与监听器相关联的对象将无法被垃圾回收。
+
+```js
+function createListener() {
+  const element = document.getElementById('someElement')
+  element.addEventListener('click', () => {
+    // ...
+  })
+}
+createListener()
+// 即使 'someElement' 从 DOM 中移除，该元素及其事件监听器仍将在内存中。
+```
+
+- 循环引用: 对象之间的循环引用会阻止它们被垃圾回收。
+
+```js
+function createCircularReferences() {
+  const obj1 = {}
+  const obj2 = {}
+  obj1.ref = obj2
+  obj2.ref = obj1
+}
+createCircularReferences()
+// 由于循环引用，'obj1' 和 'obj2' 都将保留在内存中。
+```
+
+- setTimeout/setInterval: 使用 setTimeout 或 setInterval 时，如果没有正确清理，可能会导致内存泄漏，特别是当回调函数持有对大型对象的引用时。
+
+```js
+function doSomethingRepeatedly() {
+  const data = [
+    /* 大量数据 */
+  ]
+  setInterval(() => {
+    // 回调函数持有对 'data' 的引用，即使它不再需要
+    console.log(data)
+  }, 1000)
+}
+doSomethingRepeatedly()
+// 'doSomethingRepeatedly' 不再使用时，定时器仍然运行，导致内存泄漏。
+```
+
+## 问题 19：什么是闭包，有什么作用
+
+**定义**：<u style="background: pink;">闭包是</u>指引用了另一个函数作用域中变量的<u style="background: pink;">函数</u>，通常是在嵌套函数中实现的。
+
+**作用**：闭包可以保留其被定义时的作用域，这意味着闭包内部可以访问外部函数的局部变量，即使外部函数已经执行完毕。这种特性使得闭包可以在后续调用中使用这些变量。
+
+**注意**：闭包会使得函数内部的变量在函数执行后仍然存在于内存中，直到没有任何引用指向闭包。如果不注意管理闭包，可能会导致内存泄漏问题。
+
+**案例**：
+
+```js
+// 案例1
+const accumulation = function (initial) {
+  let result = initial
+  return function (value) {
+    result += value
+    return result
+  }
+}
+
+// 案例2
+for (var i = 0; i < 10; ++i) {
+  ;(function (index) {
+    setTimeout(function () {
+      console.log(index)
+    }, 1000)
+  })(i)
+}
+```
+
+## 问题 20：数组去重的方法
+
+- Set：只允许存储唯一的值，可以将数组转换为 `Set`，然后再将 `Set` 转换回数组以去重。
+
+```js
+const arr = [1, 2, 2, 3, 4, 4, 5]
+const uniqueArr = [...new Set(arr)]
+```
+
+- 利用 filter 方法: 遍历数组，只保留第一次出现的元素。
+
+```js
+const arr = [1, 2, 2, 3, 4, 4, 5]
+const uniqueArr = arr.filter(
+  (value, index, self) => self.indexOf(value) === index
+)
+```
+
+- 使用 reduce 方法: 逐个遍历数组元素，构建一个新的数组，只添加第一次出现的元素。
+
+```js
+const arr = [1, 2, 2, 3, 4, 4, 5]
+const uniqueArr = arr.reduce((acc, current) => {
+  if (!acc.includes(current)) {
+    acc.push(current)
+  }
+  return acc
+}, [])
+```
+
+- 使用 indexOf 方法: 遍历数组，对于每个元素，检查其在数组中的索引，如果第一次出现，则添加到新数组。
+
+```js
+const arr = [1, 2, 2, 3, 4, 4, 5]
+const uniqueArr = []
+arr.forEach((value) => {
+  if (uniqueArr.indexOf(value) === -1) {
+    uniqueArr.push(value)
+  }
+})
+```
+
+- 使用 includes 方法: 类似于 indexOf 方法，只不过使用 includes 来检查元素是否已存在于新数组。
+
+```js
+const arr = [1, 2, 2, 3, 4, 4, 5]
+const uniqueArr = []
+arr.forEach((value) => {
+  if (!uniqueArr.includes(value)) {
+    uniqueArr.push(value)
+  }
+})
+```
+
+## 问题 21：JS 数组 reduce 方法的使用
+
+```js
+// 累加
+const result = [1, 2, 3].reduce((pre, cur) => pre + cur)
+console.log(result)
+
+// 找最大值
+const result = [1, 2, 3, 2, 1].reduce((pre, cur) => Math.max(pre, cur))
+console.log(result)
+
+// 数组去重
+const resultList = [1, 2, 3, 2, 1].reduce((preList, cur) => {
+  if (preList.indexOf(cur) === -1) {
+    preList.push(cur)
+  }
+  return preList
+}, [])
+console.log(resultList)
+
+// 归类
+const dataList = [
+  { name: 'aa', country: 'China' },
+  { name: 'bb', country: 'China' },
+  { name: 'cc', country: 'USA' },
+  { name: 'dd', country: 'EN' }
+]
+const resultObj = dataList.reduce((preObj, cur) => {
+  const { country } = cur
+  if (!preObj[country]) {
+    preObj[country] = []
+  }
+  preObj[country].push(cur)
+  return preObj
+}, {})
+console.log(resultObj)
+
+// 字符串反转
+const str = 'hello world'
+const resultStr = Array.from(str).reduce((pre, cur) => {
+  return `${cur}${pre}`
+}, '')
+console.log(resultStr)
+```
+
+## 问题 22：JS 数组常见操作方式及方法
+
+```js
+// 遍历
+for (let i = 0; i < list.length; ++i) {} // 遍历性能最好
+for (const key in list) {
+}
+for (const item of list) {
+}
+list.forEach((item) => {}) // 仅遍历
+list.map((item) => {}) // 返回构造后的新数组
+
+// 逻辑判断
+list.every((item) => {}) // 全部返回 true 则函数返回 true
+list.some((item) => {}) // 有一项返回 true, 则函数返回 true, 内部 或 关系
+
+// 过滤
+list.filter((item) => {}) // 返回过滤后的新数组
+
+// 查找
+list.indexOf() // 第一个找到的位置，否则为 -1
+list.lastIndexOf() // 最后一个找到的位置，否则为 -1
+list.includes() // 接受一个参数，如果数组有目标值，则返回 true
+list.find() // 如果找到目标值，返回目标值，否则返回 undefined
+list.findIndex() // 如果找到目标值，返回下标，否则返回 -1
+```
+
+## 问题 23：如何遍历对象
+
+```js
+// for in
+const obj = { a: 1, b: 2, c: 3 }
+for (let key in obj) {
+  console.log(key, obj[key])
+}
+
+// Object.keys
+const obj = { a: 1, b: 2, c: 3 }
+const keys = Object.keys(obj)
+keys.forEach((key) => {
+  console.log(key, obj[key])
+})
+
+// Object.entries
+const obj = { a: 1, b: 2, c: 3 }
+const entries = Object.entries(obj)
+entries.forEach(([key, value]) => {
+  console.log(key, value)
+})
+
+// Reflect.ownKeys
+const obj = { a: 1, b: 2, c: 3 }
+Reflect.ownKeys(obj).forEach((key) => {
+  console.log(key, obj[key])
+})
+```
+
+## 问题 24：创建对象的方式
+
+- 对象字面量：使用大括号 `{}` 创建对象，可以在大括号内定义对象的属性和方法。
+
+```js
+var person = {
+  name: 'Alice',
+  age: 30,
+  sayHello: function () {
+    console.log('Hello!')
+  }
+}
+```
+
+- 构造函数（Constructor Function）：使用构造函数创建对象，通过 new 关键字调用以创建对象。
+
+```js
+function Person(name, age) {
+  this.name = name
+  this.age = age
+}
+
+var person1 = new Person('Alice', 30)
+```
+
+- Object.create() 方法：使用 Object.create() 方法创建对象，可以指定对象的原型。
+
+```js
+var person = Object.create(null) // 创建一个空对象
+person.name = 'Alice'
+person.age = 30
+```
+
+- 类（ES6 中引入的类）：使用类定义对象，类是一种对象构造器的语法糖。
+
+```js
+class Person {
+  constructor(name, age) {
+    this.name = name
+    this.age = age
+  }
+}
+
+var person1 = new Person('Alice', 30)
+```
+
+## 问题 25：什么是作用域链
+
+作用域链是 JavaScript 中用于查找变量的一种机制，它是由一系列嵌套的作用域对象构成的链式结构。每个作用域对象包含了在该作用域中声明的变量以及对外部作用域的引用，目的是确定在给定的执行上下文中如何查找变量。当您引用一个变量时，JavaScript 引擎会首先在当前作用域对象中查找该变量。如果找不到，它会沿着作用域链向上查找，直到找到该变量或达到全局作用域。如果变量在全局作用域中也找不到，将抛出一个引用错误。
+
+**作用域链的形成方法**：
+
+1. 在函数内部，会创建一个新的作用域对象，包含了函数的参数、局部变量以及对外部作用域的引用。
+2. 如果在函数内部嵌套了其他函数，那么每个内部函数都会创建自己的作用域对象，形成一个链。
+3. 这个链条会一直延伸到全局作用域。
+
+## 问题 26：作用域链如何延长
+
+**闭包**
+
+闭包可以延长作用域链，使得函数内部的变量在函数执行完毕后仍然可以被访问。
+
+```js
+function makeCounter() {
+  var count = 0
+  return function () {
+    count++
+    return count
+  }
+}
+
+var counter1 = makeCounter()
+var counter2 = makeCounter()
+
+console.log(counter1()) // 1
+console.log(counter1()) // 2
+console.log(counter2()) // 1，每个 counter 具有自己的作用域链，且都延长了 count 的作用域
+```
