@@ -5,6 +5,7 @@ export const sidebar = {
       items: [
         { text: 'HTML + CSS', link: '/前端基础/html+css/' },
         { text: 'JS', link: '/前端基础/js/' },
+        { text: 'Promise', link: '/前端基础/promise/' },
       ]
     },
     {
