@@ -53,10 +53,20 @@ new Promise((resolve, reject) => {
 })
 ```
 
-4. `async` 和 `await` 的执行顺序
+4. 带有 `async` 和 `await` 的 `Promise` 的执行顺序
+
+> `await` 后面的那一部分是同步代码（因为 `await` 等待的是后面内容的运行结果，所以会立即执行）
+>
+> 当 `await` 后的 `Promise` 完成后，将剩余代码放入微队列中，也就是下面的 `console.log(3)` 会放入微队列中
 
 ```js
+const fn = async () => {
+  console.log(2)
+  await p // 这里的 await 后面的 Promise 是同步执行的
+  console.log(3)
+}
 
+fn()
 ```
 
 :::
@@ -94,15 +104,12 @@ class MyPromise {
   }
 }
 
-const p = new MyPromise(
-  (resolve, reject) => {
-    // 在 Promise 中抛出异步错误，是捕获不到的
-    setTimeout(() => {
-      throw new Error('出错了')
-    }, 1000)
-  },
-  (err) => {}
-)
+const p = new MyPromise((resolve, reject) => {
+  // 在 Promise 中抛出异步错误，是捕获不到的
+  setTimeout(() => {
+    throw new Error('出错了')
+  }, 1000)
+})
 ```
 
 ### 2、Promise 的 then 方法的实现
@@ -151,6 +158,7 @@ class MyPromise {
       if (this.#state === 'fulfilled') {
         if (typeof onFullfilled === 'function') {
           onFullfilled(this.#value)
+        } else {
         }
       }
       if (this.#state === 'rejected') {
@@ -196,3 +204,108 @@ p.then(
 ```
 
 ### 3、Promise 的 then 方法的返回值
+
+`then` 的返回值，也就是调用 `resolve` / `reject`
+
+```js
+class MyPromise {
+  // 定义内部私有属性
+  #state = 'pending'
+  #value = undefined
+  #handlers = [] // 存储 then 方法的内容
+  constructor(exceutor) {
+    const resolve = (data) => {
+      // resolve 函数作用：调用后，改变 Promise 的状态
+      this.#changeState('fulfilled', data)
+    }
+    const reject = (reason) => {
+      this.#changeState('rejected', reason)
+    }
+    try {
+      exceutor(resolve, reject)
+    } catch (error) {
+      reject(error) // 处理 Promise 中
+    }
+  }
+
+  #changeState = (state, value) => {
+    if (this.#state === 'pending') {
+      // 状态只能改变一次
+      this.#state = state
+      this.#value = value
+      this.#run()
+    }
+  }
+
+  #run = () => {
+    if (this.#state === 'pending') {
+      return
+    }
+    while (this.#handlers.length) {
+      const { onFullfilled, onRejected, resolve, reject } =
+        this.#handlers.shift()
+      if (this.#state === 'fulfilled') {
+        if (typeof onFullfilled === 'function') {
+          try {
+            // 在 onFullfilled 中抛出异常，则该异常会传递到下一个 then 的 onRejected 中
+            const data = onFullfilled(this.#value)
+            resolve(data)
+          } catch (error) {
+            reject(error)
+          }
+        } else {
+          // 当传入的参数不是函数，then 的 Promise 状态为【这个参数】（也就是 Promise 穿透）
+          resolve(this.#value)
+        }
+      }
+      if (this.#state === 'rejected') {
+        if (typeof onRejected === 'function') {
+          try {
+            const data = onRejected(this.#value)
+            resolve(data)
+          } catch (error) {
+            reject(error)
+          }
+        } else {
+          reject(this.#value)
+        }
+      }
+    }
+  }
+
+  then(onFullfilled, onRejected) {
+    return new MyPromise((resolve, reject) => {
+      this.#handlers.push({
+        onFullfilled,
+        onRejected,
+        resolve,
+        reject
+      })
+      this.#run()
+    })
+  }
+}
+
+const p = new MyPromise((resolve, reject) => {
+  // 在 Promise 中抛出异步错误，是捕获不到的
+  setTimeout(() => {
+    // throw new Error('出错了')
+    reject('出错了')
+    // resolve('成功')
+  }, 1000)
+})
+p.then(
+  //   (res) => {
+  //     console.log('success', res)
+  //   },
+  123,
+  (err) => {
+    console.log(err)
+    return '失败123'
+  }
+).then((res) => {
+  console.log(res)
+})
+
+console.log(p)
+```
