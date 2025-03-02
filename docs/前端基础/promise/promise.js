@@ -65,14 +65,14 @@ const p = new MyPromise(
     // 在 Promise 中抛出异步错误，是捕获不到的
     setTimeout(() => {
       // throw new Error('出错了')
-      reject('出错了')
-      // resolve('成功')
+      // reject('出错了')
+      resolve('成功')
     }, 1000)
   },
   (err) => {}
 )
 p.then(
-  (res, err) => {
+  (res) => {
     console.log('success', res)
   },
   (err) => {

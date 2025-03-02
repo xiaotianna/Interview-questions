@@ -186,7 +186,7 @@ const p = new MyPromise(
   (err) => {}
 )
 p.then(
-  (res, err) => {
+  (res) => {
     console.log('success', res)
   },
   (err) => {
