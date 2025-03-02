@@ -826,3 +826,86 @@ console.log(counter1()) // 1
 console.log(counter1()) // 2
 console.log(counter2()) // 1，每个 counter 具有自己的作用域链，且都延长了 count 的作用域
 ```
+
+## 问题 27：事件冒泡和事件捕获的区别，如何阻止？
+
+**事件冒泡（Bubbling）**
+
+- 事件从触发事件的目标元素开始，逐级向上冒泡到 DOM 树的根节点。
+- 首先执行目标元素上的事件处理程序，然后是父元素，再是更高层次的祖先元素。
+- 事件冒泡是默认的事件传播方式。
+
+**事件捕获（Capturing）**
+
+- 事件从 DOM 树的根节点开始，逐级向下捕获到触发事件的目标元素。
+- 首先执行根节点上的事件处理程序，然后是子元素，再是更低层次的子孙元素。
+- 事件捕获通常需要显式启用，通过 `addEventListener` 的第三个参数设置为 `true` 来启用事件捕获。
+
+**应用**
+
+- `addEventListener` 第三个参数：`true` 为捕获，`false` 为冒泡，默认 `false`
+- `event.stopPropagation()` 阻止冒泡
+
+## 问题 28：事件委托
+
+事件委托是一种常见的 JavaScript 编程技巧，它的核心思想是将事件处理程序附加到一个祖先元素上，而不是直接附加到每个子元素上，当事件在子元素上冒泡时，祖先元素捕获事件并根据事件目标来确定如何处理事件。
+
+- **性能优势**：事件委托可以减少事件处理程序的数量，特别是在大型文档中，因为您只需为一个祖先元素添加一个事件处理程序。这降低了内存消耗和提高了性能，因为不必为每个子元素都绑定事件。
+- **动态元素**：事件委托适用于动态生成的元素，因为无需为新添加的元素单独绑定事件，而是在祖先元素上继续使用相同的事件处理程序。
+- **代码简洁性**：通过将事件处理逻辑集中在祖先元素上，代码更加简洁和可维护，因为您不需要为每个子元素编写相似的事件处理代码。
+- **处理多个事件类型**：通过在祖先元素上处理多个事件类型，可以实现更多的灵活性。例如，您可以在祖先元素上处理点击事件、鼠标移动事件和键盘事件，而不必为每个事件类型创建单独的事件处理程序。
+
+示例：假设您有一个无序列表（`<ul>`）中的多个列表项（`<li>`），您希望在点击任何列表项时执行某些操作。您可以使用事件委托来处理这些点击事件，而不必为每个列表项单独添加事件处理程序。
+
+```js
+const ulElement = document.querySelector('ul')
+ulElement.addEventListener('click', function (event) {
+  if (event.target.tagName === 'LI') {
+    // 在这里执行点击列表项时的操作console.log("点击了列表项: " + event.target.textContent);
+  }
+})
+```
+
+在上述示例中，事件委托将点击事件处理程序附加到了 `<ul>` 元素上，并使用 event.target 来确定被点击的列表项。这种方法使得单个事件处理程序能够处理整个列表的点击事件。
+
+## 问题 29：链式调用实现方式
+
+链式调用是通过在对象的方法中返回对象自身（this）来实现的。可使多个方法调用连续写在一起，形成链式调用。
+
+```js {7,11,15,19,22}
+class Calculator {
+  constructor(num) {
+    this.value = num
+  }
+  add(num) {
+    this.value += num
+    return this // 返回自身，以实现链式调用
+  }
+  subtract(num) {
+    this.value -= num
+    return this
+  }
+  multiply(num) {
+    this.value *= num
+    return this
+  }
+  divide(num) {
+    this.value /= num
+    return this
+  }
+  getValue() {
+    return this.value
+  }
+}
+const calculator = new Calculator(10)
+  .add(5)
+  .subtract(2)
+  .multiply(3)
+  .divide(4)
+  .getValue()
+console.log(calculator) // 输出 2.25
+```
+
+## 问题 30：for-in 和 for-of
+
+## 问题 31：apply、bind、call

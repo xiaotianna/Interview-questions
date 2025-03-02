@@ -5,7 +5,7 @@ export const sidebar = {
       items: [
         { text: 'HTML + CSS', link: '/前端基础/html+css/' },
         { text: 'JS', link: '/前端基础/js/' },
-        { text: 'Promise', link: '/前端基础/promise/' },
+        { text: 'Promise', link: '/前端基础/promise/' }
       ]
     },
     {
@@ -87,13 +87,20 @@ export const sidebar = {
           link: '/项目/个人项目/开发约定式路由插件'
         },
         {
-          text: '低代码物料组件库搭建',
-          link: '/项目/个人项目/低代码物料组件库搭建'
-        },
-        { text: '单元测试', link: '/项目/个人项目/单元测试' },
-        {
           text: '低代码项目JSON Schema与参数校验',
           link: '/项目/个人项目/低代码项目JSON Schema与参数校验'
+        },
+        {
+          text: '低代码数据协议',
+          link: '/项目/个人项目/低代码数据协议'
+        },
+        {
+          text: '物料渲染引擎',
+          link: '/项目/个人项目/物料渲染引擎'
+        },
+        {
+          text: '低代码样式设计',
+          link: '/项目/个人项目/低代码样式设计'
         }
       ]
     },
@@ -109,12 +116,38 @@ export const sidebar = {
           text: 'im项目为什么选择socket.io',
           link: '/项目/个人项目/im项目为什么选择socket.io'
         },
-        { text: '大文件分片', link: '/项目/个人项目/大文件分片' }
+        { text: '大文件上传', link: '/项目/个人项目/大文件上传' }
       ]
     },
     {
       text: '个人项目🌭 迷你markdown编辑器项目',
-      items: [{ text: 'css方案选择', link: '/项目/个人项目/css方案选择' }]
+      items: [
+        { text: 'css方案选择', link: '/项目/个人项目/css方案选择' },
+        {
+          text: '主题切换',
+          link: '/项目/个人项目/主题切换'
+        },
+        {
+          text: '同步滚动',
+          link: '/项目/个人项目/同步滚动'
+        },
+        {
+          text: 'AST解析',
+          link: '/项目/个人项目/AST解析'
+        },
+        {
+          text: '手写发布订阅',
+          link: '/项目/个人项目/手写发布订阅'
+        },
+        {
+          text: '工具栏插件化',
+          link: '/项目/个人项目/工具栏插件化'
+        },
+        {
+          text: '测试',
+          link: '/项目/个人项目/测试'
+        }
+      ]
     }
   ],
   '/算法/': [

@@ -5,8 +5,12 @@ hero:
     tagline: 前端面试题📖
     
 features:
-    - title: 前端基础
+    - title: 前端基础（HTML + CSS）
       link: /前端基础/html+css/
+    - title: JS
+      link: /前端基础/js/
+    - title: Promise
+      link: /前端基础/promise/
     - title: 浏览器相关
       link: /前端基础/浏览器相关/进程和线程
     - title: 计算机网络
