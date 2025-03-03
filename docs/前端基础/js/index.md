@@ -1032,6 +1032,12 @@ fn0.l()() // 200，this指向当前对象
   - 第一个参数是函数执行时的 `this` 值。
   - 后面的参数是传递给函数的具体参数，按顺序传入。
 
+::: tip 本质
+
+`函数.call(xxx, arg1, arg2, ...)` => `xxx.函数(arg1, arg2, ...)`
+
+:::
+
 ```js
 function greet(name, age) {
   console.log(name, age)
@@ -1180,17 +1186,325 @@ Function.prototype.myBind = function (ctx, ...args) {
 - `call` 和 `apply` 都是<u>立即调用函数</u>，并且可以指定 this，区别在于参数传递方式不同。
 - `bind` <u>返回一个新函数，不会立即执行</u>，适合用于绑定 this 或部分参数。
 
-## 问题 33：new 操作符
+## 问题 33：原型链和原型对象
 
+### 原型对象 prototype
 
+```js
+function test(name) {
+  this.name = name
+}
+console.log(test.prototype)
+```
 
-## 问题 34：原型链和原型对象
+`prototype` 是**函数**的一个属性（每个函数都有一个 `prototype` 属性），这个属性是一个对象，叫做 `原型对象`。当我们创建函数的时候，会默认添加 `prototype` 属性。
 
-## 问题 35：call 和 apply 的链式调用
+> 这个 `原型对象` 上有一个 `constructor` 属性，指向构造函数（test）本身。因此，test.prototype.constructor 等于 test。
+
+例如：
+
+```js
+function test(name) {
+  this.name = name
+}
+
+console.log('test.prototype🌍', test.prototype)
+console.log('test🌍', test)
+console.log('test.prototype.constructor🌍', test.prototype.constructor)
+```
+
+<img src="./img/原型constructor.png" alt="原型constructor" style="zoom:50%;" />
+
+### 隐式原型 `__proto__`
+
+`__proto__` 是**实例对象**的一个属性，叫做 `隐式原型`。`__proto__` 指向构造函数的 `prototype`（也就是 `A.prototype === a.__proto__`）。
+
+### 原型链
+
+原型链顶层为 `null`（`Object.prototype.__proto__ === null`）
+
+```js
+function test(name) {
+  this.name = name
+}
+
+const obj = new test('wifi')
+console.log(obj.__proto__ === test.prototype) // true
+console.log(test.prototype.__proto__ === Object.prototype) // true
+console.log(Object.prototype.__proto__) // null
+
+/**
+ * obj {
+ *      __proto__: test.prototype = {
+ *          __proto__: Object.prototype = {
+ *              __proto__: null
+ *          }
+ *      }
+ * }
+ */
+```
+
+### 原型链的查找规则
+
+先在当前对象上查找，如果找到了就返回。原型链顶层为 `null`（`Object.prototype.__proto__`），找不到则返回 `undefined`。
+
+![原型链](./img/原型链.png)
+
+### 原型中，对象遍历的一些问题
+
+```js
+function test(name) {
+  this.name = name
+}
+
+const obj = new test('wifi')
+obj.a = 1
+test.prototype.b = 2
+Object.prototype.c = 3
+/**
+ * 原型链
+ * obj {
+ *      a: 1
+ *      __proto__: test.prototype = {
+ *          b: 2
+ *          __proto__: Object.prototype = {
+ *              c: 3
+ *              __proto__: null
+ *          }
+ *      }
+ * }
+ */
+
+for (const key in obj) {
+  console.log(key) // name a b c
+}
+```
+
+这个时候，遍历出来的 `key`，会遍历到原型对象里面的属性，解决方法如下：
+
+```js
+// 方法1
+Object.keys(obj).forEach((key) => {
+  console.log(key) // name a
+})
+
+// 方法2
+for (const key in obj) {
+  // 判断属性是否存在于自身，而不是在原型对象上
+  if (obj.hasOwnProperty(key)) {
+    console.log(key) // name a
+  }
+}
+```
+
+### 原型链实战
+
+```js
+const Foo = function () {
+  this.a = function () {
+    console.log(1)
+  }
+}
+
+Foo.prototype.a = function () {
+  console.log(2)
+}
+
+Foo.a = function () {
+  console.log(3)
+}
+
+let foo = new Foo()
+foo.a()
+```
+
+输出：1
+
+解析：
+
+在 `foo` 访问属性的时候，优先会访问自身属性，如果自身没有，就会访问原型属性。
+
+> 这里需要注意函数的`静态方法`。静态方法，是通过 `Foo.a()` 直接调用执行的
+
+```js
+const Foo = function () {
+  this.a = function () {
+    // this 指向 foo，所以 foo.a 就是自身的方法
+    console.log(1)
+  }
+}
+
+Foo.prototype.a = function () {
+  // 方法在Foo的原型上
+  console.log(2)
+}
+
+Foo.a = function () {
+  // 静态方法，是通过 `Foo.a()` 直接调用执行的
+  console.log(3)
+}
+
+let foo = new Foo()
+foo.a() // 输出：1
+```
+
+## 问题 34：继承
+
+### ES6 类继承
+
+使用 `class` 和 `extends` 关键字，实现继承。
+
+```js
+class Animal {
+  constructor(name) {
+    this.name = name
+  }
+}
+
+class Dog extends Animal {
+  constructor(name, age) {
+    // super 调用父类的构造函数
+    super(name)
+    this.age = age
+  }
+}
+```
+
+### 原型链继承
+
+> 在子类的原型上，添加父类的实例，实现继承。`Dog.prototype = new Animal('dog')`
+
+```js
+function Animal(name) {
+  this.name = name
+}
+
+Animal.prototype.say = function () {
+  console.log('Animal say: ', this.name)
+}
+
+function Dog(age) {
+  this.age = age
+}
+
+Dog.prototype = new Animal('dog')
+const myDog = new Dog(2)
+myDog.say() // Animal say: dog
+```
+
+### 构造函数继承
+
+```js
+function Animal(name) {
+  this.name = name
+}
+
+function Dog(name, age) {
+  Animal.call(this, name) // 使用构造函数继承，继承属性
+  // Animal.bind(this, name)()
+  this.age = age
+}
+
+let myDog = new Dog('旺财', 2)
+console.log(myDog) // Dog { name: '旺财', age: 2 }
+```
+
+`Dog` 构造函数内部调用了 `Animal` 构造函数，继承了 `Animal` 的属性和方法。
+
+## 问题 35：new 操作符
+
+### new 操作符做了什么
+
+1. 创建了一个空对象
+2. 将空对象的原型，指向于构造函数的原型（`obj.__proto__ = Obj.prototype`）
+
+```js
+Object.setPrototypeOf(obj1, obj2) 静态方法可以将一个指定对象的原型obj1（即内部的 `[[Prototype]]` 属性）设置为另一个对象或者 null(obj2)。
+```
+
+3. 将空对象作为构造函数的上下文（就是改变 this 的指向）
+4. 对构造函数有返回值的处理判断（如果构造函数返回值是基本类型，就忽略返回值；如果是引用类型，则使用该返回值）
+
+```js
+function Foo() {
+  this.name = 'wifi'
+  return {}
+}
+console.log(new Foo()) // {}
+
+function Foo2() {
+  this.name = 'wifi'
+  return 123
+}
+console.log(new Foo2()) // {name: "wifi"}
+```
+
+### 手写 new 操作符
+
+```js
+function Person(name, age) {
+  this.name = name
+  this.age = age
+}
+
+function myNew(constructor, ...args) {
+  /**
+   * 1. 创建了一个空对象
+   * const obj = {}
+   * 2. 将空对象的原型，指向于构造函数的原型（`obj.__proto__ = Obj.prototype`）
+   * obj.__proto__ = constructor.prototype
+   */
+  // Object.create() 静态方法以一个现有对象作为原型，创建一个新对象。
+  const obj = Object.create(constructor.prototype)
+  // 3. 将空对象作为构造函数的上下文（就是改变this的指向）
+  const result = constructor.apply(obj, args)
+  // 4. 对构造函数有返回值的处理判断（如果构造函数返回值是基本类型，就忽略返回值；如果是引用类型，则使用该返回值）
+  return result instanceof Object ? result : obj
+}
+
+const p = myNew(Person, 'wifi', 18)
+console.log(p)
+```
+
+## 问题 36：call 和 apply 的链式调用
 
 > 考察：原型和原型链
 
-## 问题 36：Symbol 特性与作用
+```js
+const r = console.log.call.call.call.call.call.call.call.call.apply(
+  (a) => a,
+  [1, 2]
+)
+```
+
+解析：
+
+```js
+/**
+console.log.__proto__ === Function.prototype // console 是一个对象，log方法是对象上的属性
+console.log.call === Function.prototype.call // log是一个函数，函数有 call 方法
+console.log.call.call === Function.prototype.call
+ */
+const r = console.log.call.call.call.call.call.call.call.call.apply(
+  (a) => a,
+  [1, 2]
+)
+
+// r可以转成：
+const r1 = Function.prototype.call.apply((a) => a, [1, 2])
+/**
+ * Function.prototype.call也是一个函数
+ * 函数.apply(xxx, [...args]) => xxx.函数(...args) ，函数为call
+ * (a) => a => xxx
+ */
+// r1可以转成：
+const fn = (a) => a
+const r2 = fn.call(1, 2)
+
+console.log(r2) // 2
+```
+
+## 问题 37：Symbol 特性与作用
 
 1. **唯一性**：每个 Symbol 值都是唯一的，即使它们具有相同的描述字符串，它们也不相等。
 
