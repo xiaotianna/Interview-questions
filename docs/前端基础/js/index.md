@@ -1,5 +1,11 @@
 # JS
 
+::: details 目录
+
+[[toc]]
+
+:::
+
 ## 问题 1：阐述一下 JS 的事件循环
 
 事件循环又叫做消息循环，是浏览器渲染主线程的工作方式。
@@ -908,4 +914,300 @@ console.log(calculator) // 输出 2.25
 
 ## 问题 30：for-in 和 for-of
 
-## 问题 31：apply、bind、call
+**for-in**：遍历对象的可枚举属性（包括原型链上的属性）。
+
+```js
+const obj = { a: 1, b: 2, c: 3 }
+for (let key in obj) {
+  console.log(key) // 输出 "a", "b", "c"
+}
+```
+
+**for-of**：遍历可迭代对象（如数组、字符串、Map、Set 等）的值。
+
+```js
+const arr = [1, 2, 3]
+for (let value of arr) {
+  console.log(value) // 输出 1, 2, 3
+}
+
+const map = [
+  ['a', 1],
+  ['b', 2]
+]
+for (let [key, value] of map) {
+  console.log(key, value) // 输出 "a" 1, "b" 2
+}
+```
+
+**总结**：
+
+- 如果你需要遍历对象的键（属性名），使用 for-in。
+- 如果你需要遍历可迭代对象的值，使用 for-of。
+- 对于数组，推荐使用 for-of 或者 forEach，避免使用 for-in，以防止意外遍历到非索引属性。
+
+## 问题 31：上下文 与 this 的指向问题
+
+`this` 的指向取决于函数如何调用
+
+```js
+function fn() {
+  console.log(this)
+}
+
+function Person() {
+  this.name = 'wifi'
+}
+
+上面的两个例子 `this` 都不知道指向谁，因为没有被调用
+```
+
+| 调用方式              | 示例                     | 函数中的 this 指向                                      |
+| :-------------------- | :----------------------- | :------------------------------------------------------ |
+| 直接调用              | `method()`               | 全局对象（window/global）（严格模式下，是 `undefined`） |
+| 作为对象的方法调用    | `obj.method()`           | 对象本身                                                |
+| 作为构造函数(new)调用 | `const p = new Person()` | 构造函数的实例对象(p)                                   |
+| call、apply、bind     | `method.call(ctx)`       | 第一个参数                                              |
+| 箭头函数              | `() => {}`               | 箭头函数的词法作用域（指向外层最近作用域的 this）       |
+
+::: tip 执行上下文 ctx
+
+> 执行上下文可以理解是 JavaScript 代码执行的环境
+
+JavaScript 的运行环境分为三种:
+
+1. **全局环境**：全局环境是指 JS 执行的默认环境，如果是在浏览器的环境，那就会创建一个 window 对象，node 环境中会创建一个 global 对象。
+2. **函数环境**：当函数被调用时会创建对应的上下文环境，会进入当前函数中执行代码，并且每次执行函数都会创建对应的执行环境，
+3. **eval 环境**：JavaScript 中的 eval 函数执行内部代码创建的上下文环境，但是这个不推荐使用，具体可以查看 eval 作用。
+
+JS 中用 `栈` 的方式来管理执行上下文，遵循“先进后出，后进先出”的顺序。一个 JavaScript 程序在运行的过程中，会产生多个执行上下文，其中`有且只有一个是全局执行上下文`。
+
+:::
+
+### 例 1：
+
+```js
+// 通过 globalThis 可以获取全局对象（内置的）
+globalThis.a = 100
+function fn() {
+  console.log(this, 'fn this') // window，this指向全局对象
+  return {
+    a: 200,
+    m: function () {
+      console.log(this.a)
+    },
+    n: () => {
+      console.log(this.a) // 外层作用域this => window
+    },
+    k: function () {
+      return function () {
+        console.log(this.a)
+      }
+    },
+    l: function () {
+      return () => {
+        console.log(this.a) // // 外层作用域this => window
+      }
+    }
+  }
+}
+
+const fn0 = fn()
+fn0.m() // 200，this指向当前对象
+fn0.n() // 100，this指向全局对象
+fn0.k()() /** 100
+因为：第一次调用 fn0.k() 返回了一个匿名函数。
+    第二次调用 () 执行这个匿名函数，此时没有通过对象或方法调用来改变 this 的指向，所以 this 指向全局对象。
+*/
+fn0.l()() // 200，this指向当前对象
+```
+
+## 问题 32：call、apply、bind
+
+### call
+
+- 作用：立即调用函数，并指定函数内部的 this 指向。
+- 语法：`fn.call(thisArg, arg1, arg2, ...)`
+- 特点：
+  - 第一个参数是函数执行时的 `this` 值。
+  - 后面的参数是传递给函数的具体参数，按顺序传入。
+
+```js
+function greet(name, age) {
+  console.log(name, age)
+  console.log(this, 'greet this')
+}
+
+function Person(name) {
+  this.name = name
+}
+const person = new Person('Alice')
+
+/**
+ * call
+ * 参数1：thisArg，指定函数执行时的 this 值，这里指向 person
+ * 剩余参数：传递给 greet函数 的具体参数，按顺序传入。
+ */
+greet.call(person, 'Bob', 30)
+```
+
+### 手写`call`方法
+
+> 注意：`call` 方法的第一个参数 `this`，需要的是一个对象，如果不是，this 就是一个包装对象，例如：`call(123)`，会自动包装成对象，即 `call(Number(123))`，`null` 和 `undefined` 会指向`全局`。
+
+```js
+// `call` 写在函数原型上
+Function.prototype.myCall = function (ctx, ...args) {
+  ctx = ctx || window // 默认为window
+  const key = Symbol() // 创建一个唯一键，避免属性名冲突
+  ctx[key] = this // 在上下文中添加一个属性，将函数赋值给这个属性（通过 this 获取到 greet 函数）
+  const result = ctx[key](...args) // 执行函数（cxt上下文调用后，函数的this就指向ctx）
+  delete ctx[key] // 删除属性
+  return result
+}
+
+function greet(name) {
+  console.log(name)
+  console.log(this)
+}
+const person = {
+  name: 'Alice'
+}
+greet.myCall(person, 'wifi')
+
+/**
+ * - myCall的this指向？
+ *    myCall 是由 greet 调用的，所以 myCall 的 this 指向 greet。
+举例：
+function greet(name) {}
+
+greet.hello = function() {
+  // this结果：[Function: greet] { hello: [Function (anonymous)] }
+  console.log(this);
+}
+
+greet.hello()
+ */
+```
+
+### apply
+
+- 作用：立即调用函数，并指定函数内部的 this 指向。
+- 语法：`fn.apply(thisArg, [argsArray])`
+- 特点：
+  - 第一个参数是函数执行时的 `this` 值。
+  - 第二个参数是一个数组或类数组对象，作为参数列表传递给函数。
+
+```js
+function greet(name, age) {
+  console.log(name, age)
+  console.log(this, 'greet this')
+}
+
+function Person(name) {
+  this.name = name
+}
+const person = new Person('Alice')
+
+/**
+ * apply
+ * 参数1：thisArg，指定函数执行时的 this 值，这里指向 person
+ * 参数2：数组，将数组的每一项按顺序传递给 greet函数。
+ */
+greet.apply(person, ['wifi', 30])
+```
+
+> `apply` 和 `call` 的区别：
+>
+> - 都是<u>立即调用函数，并指定函数内部的 this 指向。</u>
+>
+> - `call` 方法接受一个参数列表，而 `apply` 方法接受一个数组作为参数。
+
+### 手写`apply`方法
+
+```js
+Function.prototype.myApply = function (ctx, args) {
+  ctx = ctx || window // 默认为window
+  const key = Symbol() // 创建一个唯一键，避免属性名冲突
+  ctx[key] = this // 在上下文中添加一个属性，将函数赋值给这个属性
+  const result = ctx[key](...args) // 执行函数
+  delete ctx[key] // 删除属性
+  return result
+}
+```
+
+### bind
+
+- 作用：创建一个新的函数，新函数在被调用时，会将 `this` 设置为 bind 的第一个参数。
+- 语法：`fn.bind(thisArg, arg1, arg2, ...)`
+- 特点：
+  - <u>返回一个新的函数，不会立即执行</u>。
+  - 可以提前绑定部分参数（柯里化）。
+
+```js
+function greet(name, age) {
+  console.log(name, age)
+  console.log(this)
+}
+
+function Person(name) {
+  this.name = name
+}
+const person = new Person('Alice')
+
+// greet 函数的 this 指向 person
+const greetBind = greet.bind(person)
+greetBind('Alice', 18)
+
+// 柯里化写法
+greet.bind(person)('Alice', 18)
+```
+
+### 手写`bind`方法
+
+```js
+Function.prototype.myBind = function (ctx, ...args) {
+  const fn = this
+  return function (...newArgs) {
+    fn.apply(ctx, [...args, ...newArgs])
+    // fn.call(ctx, ...args, ...newArgs)
+  }
+}
+```
+
+### 总结
+
+- `call` 和 `apply` 都是<u>立即调用函数</u>，并且可以指定 this，区别在于参数传递方式不同。
+- `bind` <u>返回一个新函数，不会立即执行</u>，适合用于绑定 this 或部分参数。
+
+## 问题 33：new 操作符
+
+
+
+## 问题 34：原型链和原型对象
+
+## 问题 35：call 和 apply 的链式调用
+
+> 考察：原型和原型链
+
+## 问题 36：Symbol 特性与作用
+
+1. **唯一性**：每个 Symbol 值都是唯一的，即使它们具有相同的描述字符串，它们也不相等。
+
+2. **不可枚举**：Symbol 类型的属性通常是不可枚举的，这意味着它们不会出现在 `for...in` 循环中。
+
+3. **用作属性名**：主要用途是作为对象属性的键，以确保属性的唯一性。
+
+```js
+const mySymbol = Symbol('mySymbol')
+const obj = {
+  [mySymbol]: '这是Symbol作为属性名的值'
+}
+```
+
+4. **Symbol 常量**：在代码中，可以使用 Symbol 来定义常量，以避免意外的值修改。
+
+```js
+const COLOR_RED = Symbol('red')
+const COLOR_GREEN = Symbol('green')
+```
