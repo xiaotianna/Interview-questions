@@ -970,6 +970,8 @@ function Person() {
 | call、apply、bind     | `method.call(ctx)`       | 第一个参数                                              |
 | 箭头函数              | `() => {}`               | 箭头函数的词法作用域（指向外层最近作用域的 this）       |
 
+> ⚠️ 注意：箭头函数的 `this` 是由定义时的作用域决定的，而不是由调用方式决定的。（即使使用 `call`、`apply` 也不能改变 this 指向。
+
 ::: tip 执行上下文 ctx
 
 > 执行上下文可以理解是 JavaScript 代码执行的环境
@@ -1006,7 +1008,7 @@ function fn() {
     },
     l: function () {
       return () => {
-        console.log(this.a) // // 外层作用域this => window
+        console.log(this.a) // 外层作用域this => window
       }
     }
   }
@@ -1017,9 +1019,156 @@ fn0.m() // 200，this指向当前对象
 fn0.n() // 100，this指向全局对象
 fn0.k()() /** 100
 因为：第一次调用 fn0.k() 返回了一个匿名函数。
-    第二次调用 () 执行这个匿名函数，此时没有通过对象或方法调用来改变 this 的指向，所以 this 指向全局对象。
+    第二次调用 () 执行这个匿名函数，**此时没有通过对象或方法调用来改变 this 的指向，所以 this 指向全局对象**。
 */
-fn0.l()() // 200，this指向当前对象
+fn0.l()() // 200，指向外层作用域 this为当前对象，所以箭头函数this指向当前对象
+
+const context = { a: 300 }
+const fn1 = fn.call(context)
+fn1.m() // 输出：200，this指向调用他的对象，{a,m,n}
+fn1.n() // 输出：300，this指向外层，也就是 context 对象
+fn1.k().call(context) // 输出：300，this指向 context 对象
+```
+
+### 例 2：
+
+```js
+var name = 'globalName'
+
+const person1 = {
+  name: 'person1',
+  age: 18,
+  foo1: function () {
+    console.log(this.name)
+  },
+  foo2: () => {
+    console.log(this.name)
+  },
+  foo3: function () {
+    return function () {
+      console.log(this.name)
+    }
+  },
+  foo4: function () {
+    console.log(this)
+    return () => {
+      console.log(this.name)
+    }
+  }
+}
+
+const person2 = {
+  name: 'person2'
+}
+
+person1.foo1()
+person1.foo1.call(person2)
+
+person1.foo2()
+person1.foo2.call(person2)
+
+person1.foo3()()
+person1.foo3.call(person2)()
+
+person1.foo4()()
+person1.foo4.call(person2)()
+```
+
+**解析：**
+
+```js
+var name = 'globalName'
+
+const person1 = {
+  name: 'person1',
+  age: 18,
+  foo1: function () {
+    console.log(this.name)
+  },
+  foo2: () => {
+    console.log(this.name)
+  },
+  foo3: function () {
+    return function () {
+      console.log(this.name)
+    }
+  },
+  foo4: function () {
+    console.log(this)
+    return () => {
+      console.log(this.name)
+    }
+  }
+}
+
+const person2 = {
+  name: 'person2'
+}
+
+person1.foo1() // 输出：person1，this指向person1
+person1.foo1.call(person2) // 输出：person2，this指向person2（不会继承到person1的age属性）
+
+person1.foo2() // 输出：globalName，this指向全局对象，即window
+person1.foo2.call(person2) // 输出：globalName，箭头函数的this是定义时决定的，call和apply不能改变它的this指向
+
+person1.foo3()() // 输出：globalName，相当于函数的直接调用，this指向全局
+person1.foo3.call(person2)() /**
+ * 输出：globalName
+ * 
+person1.foo3.call(person2)()
+可以理解为：
+const fn = person1.foo3.call(person2)
+fn() // fn是全局window调用的，所以this指向全局
+*/
+
+person1.foo4()() // 输出：person1，箭头函数this指向外层的this，外层this是person1
+person1.foo4.call(person2)() // 输出：person2，箭头函数this指向外层的this，外层的this通过call指向了person2
+```
+
+### 例 3：
+
+```js
+let length = 10
+
+function fn() {
+  return this.length + 1
+}
+
+const obj = {
+  length: 5,
+  test1: function () {
+    return fn
+  }
+}
+
+obj.test2 = fn
+
+console.log(obj.test1())
+console.log(fn())
+console.log(obj.test2())
+```
+
+**解析：**
+
+```js
+let length = 10
+
+function fn() {
+  return this.length + 1
+}
+
+const obj = {
+  length: 5,
+  test1: function () {
+    return fn()
+  }
+}
+
+obj.test2 = fn
+
+// window.length 返回窗口中框架的数量（包括 iframe 元素），没有为0
+console.log(obj.test1()) // 1，test1的this指向obj，此时没有通过对象或方法调用来改变 this 的指向，所以 this 指向全局对象
+console.log(obj.test2()) // 6，obj.test2调用fn，this指向为obj
 ```
 
 ## 问题 32：call、apply、bind
@@ -1221,6 +1370,8 @@ console.log('test.prototype.constructor🌍', test.prototype.constructor)
 
 ### 原型链
 
+原型对象也是对象，也有**proto**属性，像这样一层一层往上的结构就是原型链，最顶层为 null（`Object.prototype.__proto__ === null`），返回值是 undefined
+
 原型链顶层为 `null`（`Object.prototype.__proto__ === null`）
 
 ```js
@@ -1413,16 +1564,38 @@ console.log(myDog) // Dog { name: '旺财', age: 2 }
 
 ## 问题 35：new 操作符
 
+`new` 一般用于实例化构造函数、类，实例化后返回的是一个对象。
+
+```js
+function Test(name) {
+  this.name = name
+}
+
+// 追加方法
+Test.prototype.getName = function () {
+  return this.name
+}
+
+let test = new Test('test') // Test { name: 'test' }
+```
+
 ### new 操作符做了什么
 
-1. 创建了一个空对象
+1. 创建了一个空对象（因为实例化后返回的是个对象）
 2. 将空对象的原型，指向于构造函数的原型（`obj.__proto__ = Obj.prototype`）
 
 ```js
-Object.setPrototypeOf(obj1, obj2) 静态方法可以将一个指定对象的原型obj1（即内部的 `[[Prototype]]` 属性）设置为另一个对象或者 null(obj2)。
+// 在 Test 构造函数上能添加原型方法，所以需要改变（空）对象的原型
+// obj.__proto__ = Obj.prototype（建立原型链联系）
+Test.prototype.getName = function () {
+  return this.name
+}
 ```
 
 3. 将空对象作为构造函数的上下文（就是改变 this 的指向）
+
+> 第 2 步改变原型后，this 指向会发生变化（这里 this 在浏览器中是 window）
+
 4. 对构造函数有返回值的处理判断（如果构造函数返回值是基本类型，就忽略返回值；如果是引用类型，则使用该返回值）
 
 ```js
@@ -1524,4 +1697,60 @@ const obj = {
 ```js
 const COLOR_RED = Symbol('red')
 const COLOR_GREEN = Symbol('green')
+```
+
+## 问题 38：JS 监听对象属性的改变
+
+- **Object.defineProperty**
+
+```js
+const person = {
+  firstName: 'John',
+  lastName: 'Doe'
+}
+
+// 监听属性 "firstName"
+Object.defineProperty(person, 'firstName', {
+  get() {
+    return this._firstName
+  },
+  set(value) {
+    this._firstName = value
+    console.log(`firstName 改变为: ${value}`)
+  },
+  configurable: true // 允许属性重新定义
+})
+
+// 修改属性 "firstName" 会触发监听
+person.firstName = 'Alice' // 输出："firstName 改变为: Alice"
+```
+
+- **Proxy**
+
+```js
+const person = {
+  firstName: 'John',
+  lastName: 'Doe'
+}
+
+const handler = {
+  /**
+   * target： 被代理的对象
+   * property： 访问的属性名
+   * value： 设置的值
+   */
+  get(target, property) {
+    console.log(`访问了属性 ${property}`)
+    return target[property]
+  },
+  set(target, property, value) {
+    console.log(`设置属性 ${property} 为 ${value}`)
+    target[property] = value
+    return true
+  }
+}
+
+const proxyPerson = new Proxy(person, handler)
+console.log(proxyPerson.firstName) // 输出: "访问了属性 firstName", 然后输出 "John"
+proxyPerson.lastName = 'Smith' // 输出: "设置属性 lastName 为 Smith"
 ```
