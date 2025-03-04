@@ -970,7 +970,7 @@ function Person() {
 | call、apply、bind     | `method.call(ctx)`       | 第一个参数                                              |
 | 箭头函数              | `() => {}`               | 箭头函数的词法作用域（指向外层最近作用域的 this）       |
 
-> ⚠️ 注意：箭头函数的 `this` 是由定义时的作用域决定的，而不是由调用方式决定的。（即使使用 `call`、`apply` 也不能改变 this 指向。
+> ⚠️ 注意：箭头函数的 `this` 是由定义时的作用域决定的，而不是由调用方式决定的。（即使使用 `call`、`apply` 也不能改变 this 指向，但是他可以**继承**外层作用域的this【具体可以参考下面例2的`person1.foo4.call(person2)()`】）。
 
 ::: tip 执行上下文 ctx
 
@@ -1122,7 +1122,7 @@ fn() // fn是全局window调用的，所以this指向全局
 */
 
 person1.foo4()() // 输出：person1，箭头函数this指向外层的this，外层this是person1
-person1.foo4.call(person2)() // 输出：person2，箭头函数this指向外层的this，外层的this通过call指向了person2
+person1.foo4.call(person2)() // 输出：person2，箭头函数this【继承】外层的this，外层的this通过call指向了person2
 ```
 
 ### 例 3：
@@ -1137,7 +1137,7 @@ function fn() {
 const obj = {
   length: 5,
   test1: function () {
-    return fn
+    return fn()
   }
 }
 
