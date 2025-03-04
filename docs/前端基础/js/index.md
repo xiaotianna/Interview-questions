@@ -1144,7 +1144,6 @@ const obj = {
 obj.test2 = fn
 
 console.log(obj.test1())
-console.log(fn())
 console.log(obj.test2())
 ```
 
