@@ -27,6 +27,21 @@ ast 在线转换：[https://astexplorer.net/](https://astexplorer.net/)
 
 :::
 
+## 什么是 ast，有哪些应用场景
+
+AST 是抽象语法树，用来表示源码的树形结构
+
+**应用：**
+
+- 代码转换
+  - babel
+  - less、sass
+  - 构建工具（将代码打包转换）
+  - 压缩与混淆
+- 代码检查/格式化
+  - eslint
+  - prettier
+
 ## babel 转换过程
 
 ![babel工作流程](./img/babel工作流程.png)
