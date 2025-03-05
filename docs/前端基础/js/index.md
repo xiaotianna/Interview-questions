@@ -879,6 +879,8 @@ ulElement.addEventListener('click', function (event) {
 
 ## 问题 29：链式调用实现方式
 
+### ES6 class 类实现
+
 链式调用是通过在对象的方法中返回对象自身（this）来实现的。可使多个方法调用连续写在一起，形成链式调用。
 
 ```js {7,11,15,19,22}
@@ -913,6 +915,71 @@ const calculator = new Calculator(10)
   .divide(4)
   .getValue()
 console.log(calculator) // 输出 2.25
+```
+
+### Proxy 实现
+
+```js
+function increase(num) {
+  return num + 1
+}
+
+function decrease(num) {
+  return num - 1
+}
+
+function double(num) {
+  return num * 2
+}
+
+/**
+ * 要求：
+ * 1. 实现 chain 方法，可以链式调用
+ * 2. 调用 end 结束调用，返回最终结果
+ */
+function chain(value) {}
+
+console.log(chain(3).increase.decrease.double.end)
+```
+
+**解析：**
+
+```js
+function increase(num) {
+  return num + 1
+}
+
+function decrease(num) {
+  return num - 1
+}
+
+function double(num) {
+  return num * 2
+}
+
+/**
+ * 要求：
+ * 1. 实现 chain 方法，可以链式调用
+ * 2. 调用 end 结束调用，返回最终结果
+ */
+function chain(value) {
+  const handler = {
+    get(target, key) {
+      // target：为代理对象，这里为 {value: xxx}；key：为变化 / 访问的值
+      if (key === 'end') {
+        return target.value
+      }
+      if (window[key] instanceof Function) {
+        target.value = window[key](target.value)
+        return proxy
+      }
+    }
+  }
+  const proxy = new Proxy({ value }, handler)
+  return proxy
+}
+
+console.log(chain(3).increase.decrease.double.end)
 ```
 
 ## 问题 30：for-in 和 for-of
