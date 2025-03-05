@@ -304,7 +304,10 @@ for (let i = 0; i < 10000000; ++i) {
 
 `代码1`效率更高，因为数组的快速模式。
 
-数组模式 - 触发机制
+- 快速模式：数组在内存中是连续存储的
+- 字典模式：数组是在内存中不是连续存储的
+
+**数组模式 - 触发机制**
 
 - `快速模式`：索引从 `0` -到 `length-1`，且没有空位 或 预分配数组小于 100000，无论是否有空位。
 - `字典模式`：预分配数组大于等于 100000，数组有空位。
@@ -970,7 +973,7 @@ function Person() {
 | call、apply、bind     | `method.call(ctx)`       | 第一个参数                                              |
 | 箭头函数              | `() => {}`               | 箭头函数的词法作用域（指向外层最近作用域的 this）       |
 
-> ⚠️ 注意：箭头函数的 `this` 是由定义时的作用域决定的，而不是由调用方式决定的。（即使使用 `call`、`apply` 也不能改变 this 指向，但是他可以**继承**外层作用域的this【具体可以参考下面例2的`person1.foo4.call(person2)()`】）。
+> ⚠️ 注意：箭头函数的 `this` 是由定义时的作用域决定的，而不是由调用方式决定的。（即使使用 `call`、`apply` 也不能改变 this 指向，但是他可以**继承**外层作用域的 this【具体可以参考下面例 2 的`person1.foo4.call(person2)()`】）。
 
 ::: tip 执行上下文 ctx
 
@@ -1752,4 +1755,64 @@ const handler = {
 const proxyPerson = new Proxy(person, handler)
 console.log(proxyPerson.firstName) // 输出: "访问了属性 firstName", 然后输出 "John"
 proxyPerson.lastName = 'Smith' // 输出: "设置属性 lastName 为 Smith"
+```
+
+## 问题 39：要遍历 100000000 项的数组如何优化?
+
+- 数据预处理，以便在遍历中可以更快的访问到。
+- 减少不必要操作，只执行关键操作。
+- 分段处理，减少 cpu 瞬时压力，让数组进入快速模式。
+- webworker 并行处理（核心）
+
+**webworkder：**
+
+```html
+<!DOCTYPE html>
+<html>
+  <head>
+    <title></title>
+    <meta charset="utf-8" />
+    <style type="text/css">
+      .circle {
+        width: 300px;
+        height: 300px;
+        background-color: blue;
+        border-radius: 50%;
+        position: absolute;
+        animation: moveRightLeft 2s infinite alternate;
+      }
+      @keyframes moveRightLeft {
+        from {
+          left: 100px;
+        }
+        to {
+          left: 800px;
+        }
+      }
+    </style>
+    <script type="text/javascript">
+      const worker = new Worker('./worker.js')
+      worker.onmessage = function (res) {
+        console.log('length: ', res.data)
+      }
+      setTimeout(() => {
+        worker.postMessage({})
+      }, 1000)
+    </script>
+  </head>
+  <body>
+    <div class="circle"></div>
+  </body>
+</html>
+```
+
+```js
+// worker.js
+self.onmessage = function (req) {
+  const list = []
+  for (let i = 0; i < 100000000; ++i) {
+    list.push(Date.now())
+  }
+  self.postMessage(list.length)
+}
 ```
