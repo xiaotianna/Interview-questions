@@ -20,3 +20,11 @@ const AsyncComp = defineAsyncComponent(() =>
 ## keep-alive缓存组件
 
 作用：在多个组件间动态切换时缓存被移除的组件实例。
+
+## v-if 和 v-show
+
+需要大量变动的情况，采用 `v-show`。
+
+## v-for 绑定的 key
+
+`v-for` 时，需要为每个元素绑定一个唯一的 `key`，以方便 `Vue` 进行优化。

@@ -21,8 +21,7 @@ export const sidebar = {
     },
     {
       items: [
-        { text: '设计模式', link: '/前端基础/设计模式/' },
-        { text: '插件化', link: '/前端基础/设计模式/插件化' }
+        { text: '设计模式', link: '/前端基础/设计模式/' }
       ]
     }
   ],
