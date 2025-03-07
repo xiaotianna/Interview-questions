@@ -2222,4 +2222,99 @@ function concurRequest(urls, maxNum) {
 
 ## 问题 46：死循环 和 无限递归 会导致什么后果？
 
-## 问题 47：File 和 Blob 的区别？
+### 死循环
+
+会导致主线程长期被占用，浏览器无法响应页面刷新和用户的交互，**会导致无响应**。（不会导致内存溢出）
+
+**例1：**
+
+```js
+while (1) {
+  console.log(1)
+}
+```
+
+> 页面卡死，主线程被占用
+
+**例2：**
+
+```js
+while (1) {
+  await 1
+}
+```
+
+> 页面卡死。`await 1` 相当于 `await Promise.resolve(1)`，会放入微队列，<u>因为微队列优先级很高，浏览器渲染帧也会让微任务先执行</u>，所以也会导致页面卡死
+
+**例3：**
+
+```js
+function delay(duration = 1000) {
+  return new Promise((resolve) => {
+    setTimeout(resolve, duration)
+  })
+}
+
+while (1) {
+  await delay(0)
+}
+```
+
+> 页面不会卡死。因为定时器在延时队列，优先级很低
+
+### 无限递归
+
+会导致主线程栈溢出，但不会无响应，因为浏览器或 node 环境有最大栈数量的限制，超出会报错。
+
+**例1：**
+
+```js
+function m() {
+  m()
+}
+m()
+```
+
+> 栈溢出，报错
+
+**例2：**
+
+```js
+function m() {
+  await 1
+  m()
+}
+m()
+```
+
+> 不会导致栈溢出（因为有等待），但会导致浏览器卡死（因为：微任务优先级比渲染帧高）
+
+**例3：**
+
+```js
+function delay(duration = 1000) {
+  return new Promise((resolve) => {
+    setTimeout(resolve, duration)
+  })
+}
+
+function m() {
+  await delay(0)
+  m()
+}
+m()
+
+// 解析：m函数 相当于转变为如下内容：
+function m() {
+  return new Promise((resolve) => {
+    delay(0).then(() => {
+      m()
+      resolve()
+    })
+  })
+}
+```
+
+> 不会导致栈溢出，也不会导致页面卡死。因为定时器是延时队列，优先级很低。
+>
+> 但是如果是 Promise 的话，就会导致页面卡死（原因还是：微任务优先级比渲染帧高）。
