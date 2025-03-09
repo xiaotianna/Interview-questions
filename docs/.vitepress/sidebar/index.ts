@@ -25,6 +25,10 @@ export const sidebar = {
       ]
     }
   ],
+  '/vue/': [
+    { text: '基础知识', link: '/vue/' },
+    { text: '原理篇', link: '/vue/原理篇' },
+  ],
   '/前端工程化/': [
     {
       items: [
