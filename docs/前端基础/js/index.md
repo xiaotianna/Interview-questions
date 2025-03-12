@@ -2557,6 +2557,8 @@ console.log(shallowCopiedObj) // { a: 1, b: { c: 10 } }
 类数组也叫伪数组，类数组和数组类似，但不能调用数组方法，常见的类数组有`arguments`、通过 document.getElements 获取到的内容等，这些类数组具有 length 属性。
 
 > `arguments` 是伪数组，`[Arguments] { '0': 'a', '1': 'b', '2': 'c', '3': 'd' }`
+>
+> ⚠️注意：箭头函数本身没有 `arguments`
 
 **转换方法**
 
