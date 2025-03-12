@@ -2400,4 +2400,178 @@ console.log(num.toFixed(2)) // "123.46"
 
 ## 问题 50：防抖 和 节流
 
+**防抖（Debounce）**：当一个函数被频繁调用时，它不会立即执行，而是在最后一次调用后的特定时间间隔内没有再次被调用，才会执行。
+
+> 场景：
+>
+> - 搜索框输入时，当用户停止输入时才触发搜索。
+>
+> - 文本编辑器实时保存。
+
+```js
+function debounce(fn, wait) {
+  let timer = null
+  return (...args) => {
+    clearTimeout(timer)
+    timer = setTimeout(() => {
+      fn(args)
+      timer = null
+    }, wait)
+  }
+}
+
+document.addEventListener(
+  'input',
+  debounce(() => {
+    console.log('search')
+  }, 300)
+)
+```
+
+**节流（Throttle）**：一个时间间隔内，无论函数被调用多少次，都只执行一次。
+
+> 场景：
+>
+> - 高频事件：快速点击、滚动事件、resize 事件、mousemove 事件
+
+```js
+const throttle = (fn, wait) => {
+  let timer
+  return (...args) => {
+    if (timer) {
+      return
+    }
+    timer = setTimeout(() => {
+      fn(...args)
+      timer = null
+    }, wait)
+  }
+}
+
+document.addEventListener(
+  'input',
+  throttle(() => {
+    console.log('change')
+  }, 300)
+)
+```
+
 ## 问题 51：如何实现深浅拷贝
+
+### 深拷贝
+
+- `JSON.stringify()` 将 js 对象序列化，再通过`JSON.parse`反序列
+  - 如果对象中有函数、undefined、symbol 时，都会丢失
+  - 如果有正则表达式、Error 对象等，会得到空对象
+- 手写深拷贝
+
+```js
+function deepCopy(obj) {
+  // 检查传入的参数是否为对象
+  if (typeof obj !== 'object' || obj === null) {
+    return obj
+  }
+
+  let copy
+  // 如果是数组，创建一个新数组
+  if (Array.isArray(obj)) {
+    copy = []
+    for (let i = 0; i < obj.length; i++) {
+      // 递归调用深拷贝函数处理数组元素
+      copy[i] = deepCopy(obj[i])
+    }
+  } else {
+    // 如果是普通对象，创建一个新对象
+    copy = {}
+    for (let key in obj) {
+      if (obj.hasOwnProperty(key)) {
+        // 递归调用深拷贝函数处理对象属性
+        copy[key] = deepCopy(obj[key])
+      }
+    }
+  }
+
+  return copy
+}
+
+// 测试深拷贝
+const originalObj2 = {
+  a: 1,
+  b: { c: 2 }
+}
+const deepCopiedObj = deepCopy(originalObj2)
+
+console.log(deepCopiedObj) // 输出深拷贝后的对象
+console.log(deepCopiedObj.b === originalObj2.b) // 输出 false，说明引用不同
+```
+
+### 浅拷贝
+
+- `Object.assign()` 拷贝对象
+
+```js
+Object.assign({}, obj)
+```
+
+- 扩展运算符
+
+```js
+{ ...obj }
+```
+
+- 手写浅拷贝
+
+```js
+function shallowCopy(params) {
+  // 基本类型直接返回
+  if (!params || typeof params !== 'object') return params
+
+  // 根据 params 的类型判断是新建一个数组还是对象
+  let newObject = Array.isArray(params) ? [] : {}
+  // 遍历 params 并判断是 params 的属性才拷贝
+  for (let key in params) {
+    // arr 的 key 是 index
+    if (params.hasOwnProperty(key)) {
+      newObject[key] = params[key]
+    }
+  }
+
+  return newObject
+}
+
+// 测试浅拷贝
+const originalObj = {
+  a: 1,
+  b: { c: 2 }
+}
+const shallowCopiedObj = shallowCopy(originalObj)
+
+originalObj.a = 10
+originalObj.b.c = 10
+console.log(originalObj) // { a: 10, b: { c: 10 } }
+console.log(shallowCopiedObj) // { a: 1, b: { c: 10 } }
+```
+
+## 问题 52：对类数组对象的理解，如何转化为数组？
+
+类数组也叫伪数组，类数组和数组类似，但不能调用数组方法，常见的类数组有`arguments`、通过 document.getElements 获取到的内容等，这些类数组具有 length 属性。
+
+> `arguments` 是伪数组，`[Arguments] { '0': 'a', '1': 'b', '2': 'c', '3': 'd' }`
+
+**转换方法**
+
+- 通过 `call` 调用数组的 `xxx` 方法来实现转换
+
+```js
+Array.prototype.slice.call(arguments)
+```
+
+- 通过 `Array.from` 方法来实现转换
+
+```js
+Array.from(arguments)
+```
+
+## 问题 53：什么是尾调用，使用尾调用有什么好处？
+
+尾调用就是在函数的**最后一步调用函数**。在一个函数里调用另外一个函数会保留当前执行的上下文，如果在函数尾部调用，因为已经是函数最后一步，所以这时可以不用保留当前的执行上下文，从而节省内存。但是 ES6 的尾调用只能在严格模式下开启，正常模式是无效的。

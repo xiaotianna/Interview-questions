@@ -6,6 +6,7 @@ export const sidebar = {
         { text: 'HTML + CSS', link: '/前端基础/html+css/' },
         { text: 'JS', link: '/前端基础/js/' },
         { text: 'Promise', link: '/前端基础/promise/' },
+        { text: '手写题', link: '/前端基础/手写题/' }
       ]
     },
     {
@@ -13,25 +14,24 @@ export const sidebar = {
       items: [
         { text: '进程和线程', link: '/前端基础/浏览器相关/进程和线程' },
         { text: '事件循环', link: '/前端基础/浏览器相关/事件循环' },
-        { text: '浏览器渲染原理', link: '/前端基础/浏览器相关/浏览器渲染原理' }
+        { text: '浏览器渲染原理', link: '/前端基础/浏览器相关/浏览器渲染原理' },
+        { text: '浏览器垃圾回收机制', link: '/前端基础/浏览器相关/浏览器垃圾回收机制' },
       ]
     },
     {
       items: [{ text: '计算机网络', link: '/前端基础/计算机网络/' }]
     },
     {
-      items: [
-        { text: '设计模式', link: '/前端基础/设计模式/' }
-      ]
+      items: [{ text: '设计模式', link: '/前端基础/设计模式/' }]
     }
   ],
   '/vue/': [
     { text: '基础知识', link: '/vue/' },
-    { text: '原理篇', link: '/vue/原理篇' },
+    { text: '原理篇', link: '/vue/原理篇' }
   ],
   '/react/': [
     { text: '基础知识', link: '/react/' },
-    { text: '原理篇', link: '/react/原理篇' },
+    { text: '原理篇', link: '/react/原理篇' }
   ],
   '/前端工程化/': [
     {
@@ -164,7 +164,10 @@ export const sidebar = {
   '/算法/': [
     {
       text: '算法',
-      items: [{ text: '数据结构', link: '/算法/数据结构/' }]
+      items: [
+        { text: '数据结构', link: '/算法/数据结构/' },
+        { text: '算法题', link: '/算法/算法题/' }
+      ]
     }
   ],
   '/git/': [
