@@ -132,6 +132,7 @@ export const sidebar = {
     {
       text: '个人项目🌭 迷你markdown编辑器项目',
       items: [
+        { text: '打包构建工具', link: '/项目/个人项目/打包构建工具' },
         { text: 'css方案选择', link: '/项目/个人项目/css方案选择' },
         {
           text: '主题切换',
@@ -146,16 +147,16 @@ export const sidebar = {
           link: '/项目/个人项目/AST解析'
         },
         {
-          text: '手写发布订阅',
-          link: '/项目/个人项目/手写发布订阅'
-        },
-        {
           text: '工具栏插件化',
           link: '/项目/个人项目/工具栏插件化'
         },
         {
           text: '测试',
           link: '/项目/个人项目/测试'
+        },
+        {
+          text: '项目难点',
+          link: '/项目/个人项目/markdown编辑器-难点.md'
         }
       ]
     }

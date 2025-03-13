@@ -1,4 +1,4 @@
-
+# css方案选择
 
 ## css方案
 
@@ -86,32 +86,3 @@
    - 需要与现有 CSS 工具链集成的项目
    - 团队更熟悉传统 CSS 开发模式
      在实际项目中，这两种方案也可以混合使用，根据具体场景选择最适合的方案。例如，可以使用 CSS Modules 处理大部分静态样式，而在需要动态样式的特定组件中使用 CSS-in-JS。
-
-## 目录获取渲染区dom不同步问题
-
-使用 MutationObserver 的原因是为了解决 React 状态更新和 DOM 渲染的时序问题。让我解释一下：
-
-1. 虽然 preview 内容更新会被设置到仓库中，但是 DOM 的实际渲染可能会有延迟。这是因为：
-
-   - React 的状态更新是异步的
-   - DOM 的实际渲染会在 React 完成虚拟 DOM 的计算后才进行
-   - 特别是在处理 Markdown 渲染这种复杂操作时，DOM 的更新可能会有一定延迟
-
-2. 如果不使用 MutationObserver ，可能会出现以下问题：
-
-   ```typescript
-   useEffect(() => {
-     if (!previewView) return;
-
-     // 这时候虽然 content 更新了，但 DOM 可能还没有渲染完成
-     const elements = previewView.querySelectorAll("h1, h2, h3, h4, h5, h6");
-     setTitles(formatContents(elements)); // 可能会获取不到最新的标题
-   }, [content, previewView]);
-   ```
-
-
-3. 使用 MutationObserver 的好处：
-   - 它能够直接监听 DOM 的变化
-   - 只有在 DOM 真正更新后才会触发回调
-   - 确保我们获取到的是最新的 DOM 结构
-     所以，虽然内容会更新到仓库，但使用 MutationObserver 可以确保我们在正确的时机（DOM 真正更新后）获取标题列表，避免出现标题列表不同步的问题。

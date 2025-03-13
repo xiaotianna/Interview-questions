@@ -830,7 +830,7 @@ keys.forEach((key) => {
 
 // Object.entries
 const obj = { a: 1, b: 2, c: 3 }
-const entries = Object.entries(obj)
+const entries = Object.entries(obj) // [ ['a', 1], ['b', 2], ['c', 3] ]
 entries.forEach(([key, value]) => {
   console.log(key, value)
 })
