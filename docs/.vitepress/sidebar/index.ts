@@ -147,10 +147,6 @@ export const sidebar = {
           link: '/项目/个人项目/AST解析'
         },
         {
-          text: '工具栏插件化',
-          link: '/项目/个人项目/工具栏插件化'
-        },
-        {
           text: '测试',
           link: '/项目/个人项目/测试'
         },
