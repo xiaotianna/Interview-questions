@@ -706,7 +706,9 @@ const resultStr = Array.from(str).reduce((pre, cur) => {
 console.log(resultStr)
 ```
 
-## 问题 22：JS 数组常见操作方式及方法
+## 问题 22：JS 数组、字符串常见操作方式及方法
+
+### 数组
 
 ```js
 // 遍历
@@ -731,6 +733,83 @@ list.lastIndexOf() // 最后一个找到的位置，否则为 -1
 list.includes() // 接受一个参数，如果数组有目标值，则返回 true
 list.find() // 如果找到目标值，返回目标值，否则返回 undefined
 list.findIndex() // 如果找到目标值，返回下标，否则返回 -1
+
+// 拼接
+var arr = [1, 2, 3]
+arr.join('-') // 1-2-3
+
+// 新增
+arr.unshift(1) // 添加到数组头部
+arr.push(4) // 添加到数组尾部
+arr.splice(0, 0, 1) // 第一个入参是起始的索引值，第二个入参表示从起始索引开始需要删除的元素个数。 [1,1,2,3]
+
+// 删除
+arr.shift() // [2,3] 删除数组头部的元素
+arr.pop() // 删除数组尾部的元素
+arr.splice(1, 1) // [1,3] 删除数组任意位置的元素，返回的是删除的数组元素
+
+// 排序
+/**
+ * 如果返回值小于 0，则 a 会被排在 b 之前。
+ * 如果返回值等于 0，则 a 和 b 的相对顺序不变。
+ * 如果返回值大于 0，则 a 会被排在 b 之后。
+ * a 和 b 是数组中任意两个元素
+ */
+arr.sort((a, b) => a - b)
+arr.reverse() // 倒序
+
+// 合并 concat
+const arr1 = [1, 2, 3]
+const res = arr1.concat([4, 5]) // [1,2,3,4,5] 原数组不变，返回一个新数组
+
+// 截取 slice 返回从原数组中指定开始下标到结束下标之间的项组成的新数组
+const arr = [1, 2, 3, 4, 5]
+const res = arr.slice(1) // [2,3,4,5] 在只有一个参数的情况下，返回从该参数指定位置开始到当前数组末尾的所有项。
+const res = arr.slice(1, 3) // [2,3] 如果有两个参数，该方法返回起始和结束位置之间的项，但不包括结束位置的项。
+const res = arr.slice(1, -2) // [2,3] 当出现负数时，将负数加上数组长度的值（5）来替换该位置的数，相当于 arr.slice(1,3)
+
+// 填充
+arr.fill(1) // 会覆盖原数组，全部填充为1
+```
+
+### 字符串
+
+```js
+const str = 'hello world'
+// 指定元素下标
+const res = str.charAt(1) // e
+
+// 查找
+const res = str.indexOf('l') // 2 未找到返回 -1
+const res = str.includes('l') // true 判断字符串是否包含指定的子字符串
+const res = str.startsWith('l') // false 判断字符串是否以指定的子字符串开头
+const res = str.endsWith('l')
+
+// 连接
+const res = str.concat('!', 1) // hello world!1
+
+// 字符串切割成数组
+const res = str.split(' ') // [ 'hello', 'world' ]
+const res = str.split('', 4) // [ 'h', 'e', 'l', 'l' ] 将前4个字符进行切割
+const res = str.split(' ').join('-') // hello-world
+
+// 截取
+const res = str.slice(1,2) // e 开始下标，结束下标（不包括结束处的字符）
+const res = str.substr(1,2) // el 在字符串中抽取从开始下标开始的指定数目的字符
+const res = str.substring(1,2) // e 和 slice 一样
+
+// 替换
+const res = str.replace('l', 'L') // heLlo world 字符串替换，它只替换第一个匹配子串
+
+// 移除空白
+str.trim()
+str.trimStart()
+str.trimEnd()
+
+// 字符串转数字
+const str = '123.45'
+const num1 = parseInt(str, [进制]) // 123 解析一个字符串，并返回一个整数
+const num2 = parseFloat(str) // 123.45 解析一个字符串，并返回一个浮点数
 ```
 
 ## 问题 23：如何遍历对象
@@ -1956,11 +2035,9 @@ self.onmessage = function (req) {
 
 ```js
 // 方法1
-;(0.1 * 100 + 0.2 * 100) /
-  100(
-    // 方法2
-    0.1 + 0.2
-  ).toFixed(1)
+const num = (0.1 * 100 + 0.2 * 100) / 100
+// 方法2
+const num = (0.1 + 0.2).toFixed(1)
 ```
 
 ## 问题 42：插件化（微内核）
@@ -2558,7 +2635,7 @@ console.log(shallowCopiedObj) // { a: 1, b: { c: 10 } }
 
 > `arguments` 是伪数组，`[Arguments] { '0': 'a', '1': 'b', '2': 'c', '3': 'd' }`
 >
-> ⚠️注意：箭头函数本身没有 `arguments`
+> ⚠️ 注意：箭头函数本身没有 `arguments`
 
 **转换方法**
 

@@ -23,6 +23,9 @@ const curry = (...args1) => {
 
   return addFn
 }
+
+const add = curry(1, 2, 3)
+console.log(add(4, 5, 6)(7).valueOf()) // 28
 ```
 
 ## 问题 2：实现响应式数据 + 依赖收集
@@ -136,3 +139,121 @@ class C extends B {}
 let obj = new C()
 console.log(myInstanceof(obj, A))
 ```
+
+## 问题 4：手写 Object.create
+
+`Object.create()`：创建一个新的对象，将传入的对象原型指向新对象并返回。
+
+```js
+function MyObjectCreate(obj) {
+  function Fn() {}
+  Fn.prototype = obj
+  return new Fn()
+}
+
+class A {}
+const aObj = MyObjectCreate(A.prototype)
+```
+
+## 问题 5：使用 setTimeout 实现 setInterval
+
+::: code-group
+
+```js [简易版]
+function MySetInterval(callback, delay) {
+  const interval = () => {
+    callback()
+    setTimeout(interval, delay)
+  }
+  setTimeout(interval, delay)
+}
+
+MySetInterval(() => {
+  console.log(111)
+}, 1000)
+```
+
+```js [完整版-带clear]
+function MySetInterval(callback, delay) {
+  let timerId = null
+  const interval = () => {
+    callback()
+    timerId = setTimeout(interval, delay)
+  }
+  timerId = setTimeout(interval, delay)
+
+  return {
+    clear() {
+      clearTimeout(timerId)
+    }
+  }
+}
+
+const { clear } = MySetInterval(() => {
+  console.log(111)
+}, 1000)
+```
+
+:::
+
+## 问题 6：发布订阅模式
+
+```js
+class EventEmitter {
+  constructor() {
+    this.emit = {}
+  }
+
+  // 订阅事件
+  on(eventName, callback) {
+    if (!this.emit[eventName]) {
+      this.emit[eventName] = []
+    }
+    this.emit[eventName].push(callback)
+  }
+
+  // 发布事件
+  emits(eventName, ...args) {
+    if (!this.emit[eventName]) {
+      return new Error(eventName + 'event is not find')
+    }
+    this.emit[eventName].forEach((cb) => cb(...args))
+  }
+
+  // 取消订阅
+  off(eventName, callback) {
+    if (!this.emit[eventName]) {
+      return new Error(eventName + 'event is not find')
+    }
+    if (callback) {
+      this.emit[eventName] = this.emit[eventName].filter(
+        (cb) => cb !== callback
+      )
+    } else {
+      delete this.emit[eventName]
+    }
+  }
+}
+
+// 使用示例
+const emitter = new EventEmitter()
+
+// 订阅事件
+emitter.on('message', (message) => {
+  console.log(`收到消息: ${message}`)
+})
+
+// 发布事件
+emitter.emits('message', '你好，世界！')
+emitter.emits('message', '你好，世界2！')
+
+// 取消订阅事件
+emitter.off('message')
+
+// 再次发布事件，此时回调函数不会被执行
+emitter.emits('message', '再见，世界！')
+```
+
+## 问题 7：手写 节流、防抖、深浅拷贝、call、apply、bind、promise
+
+这些问题在对应 JS 部分 和 Promise 部分有。
