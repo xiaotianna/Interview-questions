@@ -28,6 +28,48 @@
    - 确保我们获取到的是最新的 DOM 结构
      所以，虽然内容会更新到仓库，但使用 MutationObserver 可以确保我们在正确的时机（DOM 真正更新后）获取标题列表，避免出现标题列表不同步的问题。
 
+最终实现：
+
+```tsx
+useEffect(() => {
+  if (!preview) return
+
+  // 初始化时立即执行一次
+  if (rootElement.length > 0) {
+    const initialTitles = addAnchor()
+    setTitles(initialTitles)
+    if (initialTitles.length > 0) {
+      setActiveLink(initialTitles[0].href)
+    }
+  }
+
+  const observer = new MutationObserver(() => {
+    // 再获取一次元素，防止更新不及时
+    const elements = getRootElement()
+    if (elements && elements.length > 0) {
+      requestAnimationFrame(() => {
+        const newTitles = formatContents(elements)
+        setTitles(newTitles)
+        if (newTitles.length > 0 && !activeLink) {
+          setActiveLink(newTitles[0].href)
+        }
+      })
+    }
+  })
+
+  observer.observe(preview, {
+    childList: true,
+    subtree: true,
+    characterData: true,
+    attributes: true
+  })
+
+  return () => {
+    observer.disconnect()
+  }
+}, [preview, rootElement])
+```
+
 ## 难点 2：编辑区优化
 
 1. 采用**防抖**的方式，减少编辑区渲染的频率，提高性能。
@@ -66,3 +108,4 @@ startTransition(() => {
 
 ## 难点 3：工具栏插件化
 
+使用 `Map` 结构，定义了基础的工具栏，对于工具栏的新增和删除，对外暴露了一个接口，方便插件开发者进行扩展。
